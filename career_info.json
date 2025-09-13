@@ -1,0 +1,234 @@
+{
+    "Software Engineer": {
+        "description": "A professional career in Software Engineer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Software Engineer",
+            "Take an online course or certification for Software Engineer",
+            "Work on small software engineer projects to build experience"
+        ]
+    },
+    "Data Scientist": {
+        "description": "A professional career in Data Scientist. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Data Scientist",
+            "Take an online course or certification for Data Scientist",
+            "Work on small data scientist projects to build experience"
+        ]
+    },
+    "AI/ML Engineer": {
+        "description": "A professional career in AI/ML Engineer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for AI/ML Engineer",
+            "Take an online course or certification for AI/ML Engineer",
+            "Work on small ai/ml engineer projects to build experience"
+        ]
+    },
+    "Web Developer": {
+        "description": "A professional career in Web Developer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Web Developer",
+            "Take an online course or certification for Web Developer",
+            "Work on small web developer projects to build experience"
+        ]
+    },
+    "UX/UI Designer": {
+        "description": "A professional career in UX/UI Designer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for UX/UI Designer",
+            "Take an online course or certification for UX/UI Designer",
+            "Work on small ux/ui designer projects to build experience"
+        ]
+    },
+    "Graphic Designer": {
+        "description": "A professional career in Graphic Designer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Graphic Designer",
+            "Take an online course or certification for Graphic Designer",
+            "Work on small graphic designer projects to build experience"
+        ]
+    },
+    "Artist": {
+        "description": "A professional career in Artist. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Artist",
+            "Take an online course or certification for Artist",
+            "Work on small artist projects to build experience"
+        ]
+    },
+    "Teacher": {
+        "description": "A professional career in Teacher. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Teacher",
+            "Take an online course or certification for Teacher",
+            "Work on small teacher projects to build experience"
+        ]
+    },
+    "Doctor": {
+        "description": "A professional career in Doctor. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Doctor",
+            "Take an online course or certification for Doctor",
+            "Work on small doctor projects to build experience"
+        ]
+    },
+    "Nurse": {
+        "description": "A professional career in Nurse. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Nurse",
+            "Take an online course or certification for Nurse",
+            "Work on small nurse projects to build experience"
+        ]
+    },
+    "Lawyer": {
+        "description": "A professional career in Lawyer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Lawyer",
+            "Take an online course or certification for Lawyer",
+            "Work on small lawyer projects to build experience"
+        ]
+    },
+    "Entrepreneur": {
+        "description": "A professional career in Entrepreneur. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Entrepreneur",
+            "Take an online course or certification for Entrepreneur",
+            "Work on small entrepreneur projects to build experience"
+        ]
+    },
+    "Accountant": {
+        "description": "A professional career in Accountant. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Accountant",
+            "Take an online course or certification for Accountant",
+            "Work on small accountant projects to build experience"
+        ]
+    },
+    "Civil Engineer": {
+        "description": "A professional career in Civil Engineer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Civil Engineer",
+            "Take an online course or certification for Civil Engineer",
+            "Work on small civil engineer projects to build experience"
+        ]
+    },
+    "Mechanical Engineer": {
+        "description": "A professional career in Mechanical Engineer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Mechanical Engineer",
+            "Take an online course or certification for Mechanical Engineer",
+            "Work on small mechanical engineer projects to build experience"
+        ]
+    },
+    "Electrical Engineer": {
+        "description": "A professional career in Electrical Engineer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Electrical Engineer",
+            "Take an online course or certification for Electrical Engineer",
+            "Work on small electrical engineer projects to build experience"
+        ]
+    },
+    "Pilot": {
+        "description": "A professional career in Pilot. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Pilot",
+            "Take an online course or certification for Pilot",
+            "Work on small pilot projects to build experience"
+        ]
+    },
+    "Chef": {
+        "description": "A professional career in Chef. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Chef",
+            "Take an online course or certification for Chef",
+            "Work on small chef projects to build experience"
+        ]
+    },
+    "Photographer": {
+        "description": "A professional career in Photographer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Photographer",
+            "Take an online course or certification for Photographer",
+            "Work on small photographer projects to build experience"
+        ]
+    },
+    "Journalist": {
+        "description": "A professional career in Journalist. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Journalist",
+            "Take an online course or certification for Journalist",
+            "Work on small journalist projects to build experience"
+        ]
+    },
+    "Psychologist": {
+        "description": "A professional career in Psychologist. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Psychologist",
+            "Take an online course or certification for Psychologist",
+            "Work on small psychologist projects to build experience"
+        ]
+    },
+    "Social Worker": {
+        "description": "A professional career in Social Worker. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Social Worker",
+            "Take an online course or certification for Social Worker",
+            "Work on small social worker projects to build experience"
+        ]
+    },
+    "Environmental Scientist": {
+        "description": "A professional career in Environmental Scientist. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Environmental Scientist",
+            "Take an online course or certification for Environmental Scientist",
+            "Work on small environmental scientist projects to build experience"
+        ]
+    },
+    "Pharmacist": {
+        "description": "A professional career in Pharmacist. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Pharmacist",
+            "Take an online course or certification for Pharmacist",
+            "Work on small pharmacist projects to build experience"
+        ]
+    },
+    "Veterinarian": {
+        "description": "A professional career in Veterinarian. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Veterinarian",
+            "Take an online course or certification for Veterinarian",
+            "Work on small veterinarian projects to build experience"
+        ]
+    },
+    "Fashion Designer": {
+        "description": "A professional career in Fashion Designer. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Fashion Designer",
+            "Take an online course or certification for Fashion Designer",
+            "Work on small fashion designer projects to build experience"
+        ]
+    },
+    "Architect": {
+        "description": "A professional career in Architect. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Architect",
+            "Take an online course or certification for Architect",
+            "Work on small architect projects to build experience"
+        ]
+    },
+    "Marketing Specialist": {
+        "description": "A professional career in Marketing Specialist. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Marketing Specialist",
+            "Take an online course or certification for Marketing Specialist",
+            "Work on small marketing specialist projects to build experience"
+        ]
+    },
+    "Software Tester": {
+        "description": "A professional career in Software Tester. (Add a detailed description here.)",
+        "next_steps": [
+            "Learn fundamental skills for Software Tester",
+            "Take an online course or certification for Software Tester",
+            "Work on small software tester projects to build experience"
+        ]
+    }
+}

@@ -1,0 +1,669 @@
+{
+  "AI/ML Engineer": {
+    "summary": "Overview: A career as a AI/ML Engineer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior AI/ML Engineer",
+      "AI/ML Engineer Intern",
+      "Associate AI/ML Engineer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Accountant": {
+    "summary": "Overview: A career as a Accountant. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Accountant",
+      "Accountant Intern",
+      "Associate Accountant"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Architect": {
+    "summary": "Overview: A career as a Architect. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Architect",
+      "Architect Intern",
+      "Associate Architect"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Artist": {
+    "summary": "Overview: A career as a Artist. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Artist",
+      "Artist Intern",
+      "Associate Artist"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Chef": {
+    "summary": "Overview: A career as a Chef. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Chef",
+      "Chef Intern",
+      "Associate Chef"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Civil Engineer": {
+    "summary": "Overview: A career as a Civil Engineer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Civil Engineer",
+      "Civil Engineer Intern",
+      "Associate Civil Engineer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Data Scientist": {
+    "summary": "Overview: A career as a Data Scientist. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Data Scientist",
+      "Data Scientist Intern",
+      "Associate Data Scientist"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Doctor": {
+    "summary": "Overview: A career as a Doctor. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Doctor",
+      "Doctor Intern",
+      "Associate Doctor"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Electrical Engineer": {
+    "summary": "Overview: A career as a Electrical Engineer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Electrical Engineer",
+      "Electrical Engineer Intern",
+      "Associate Electrical Engineer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Entrepreneur": {
+    "summary": "Overview: A career as a Entrepreneur. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Entrepreneur",
+      "Entrepreneur Intern",
+      "Associate Entrepreneur"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Environmental Scientist": {
+    "summary": "Overview: A career as a Environmental Scientist. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Environmental Scientist",
+      "Environmental Scientist Intern",
+      "Associate Environmental Scientist"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Fashion Designer": {
+    "summary": "Overview: A career as a Fashion Designer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Fashion Designer",
+      "Fashion Designer Intern",
+      "Associate Fashion Designer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Graphic Designer": {
+    "summary": "Overview: A career as a Graphic Designer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Graphic Designer",
+      "Graphic Designer Intern",
+      "Associate Graphic Designer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Journalist": {
+    "summary": "Overview: A career as a Journalist. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Journalist",
+      "Journalist Intern",
+      "Associate Journalist"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Lawyer": {
+    "summary": "Overview: A career as a Lawyer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Lawyer",
+      "Lawyer Intern",
+      "Associate Lawyer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Marketing Specialist": {
+    "summary": "Overview: A career as a Marketing Specialist. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Marketing Specialist",
+      "Marketing Specialist Intern",
+      "Associate Marketing Specialist"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Mechanical Engineer": {
+    "summary": "Overview: A career as a Mechanical Engineer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Mechanical Engineer",
+      "Mechanical Engineer Intern",
+      "Associate Mechanical Engineer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Nurse": {
+    "summary": "Overview: A career as a Nurse. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Nurse",
+      "Nurse Intern",
+      "Associate Nurse"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Pharmacist": {
+    "summary": "Overview: A career as a Pharmacist. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Pharmacist",
+      "Pharmacist Intern",
+      "Associate Pharmacist"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Photographer": {
+    "summary": "Overview: A career as a Photographer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Photographer",
+      "Photographer Intern",
+      "Associate Photographer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Pilot": {
+    "summary": "Overview: A career as a Pilot. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Pilot",
+      "Pilot Intern",
+      "Associate Pilot"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Psychologist": {
+    "summary": "Overview: A career as a Psychologist. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Psychologist",
+      "Psychologist Intern",
+      "Associate Psychologist"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Social Worker": {
+    "summary": "Overview: A career as a Social Worker. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Social Worker",
+      "Social Worker Intern",
+      "Associate Social Worker"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Software Engineer": {
+    "summary": "Overview: A career as a Software Engineer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Software Engineer",
+      "Software Engineer Intern",
+      "Associate Software Engineer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Software Tester": {
+    "summary": "Overview: A career as a Software Tester. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Software Tester",
+      "Software Tester Intern",
+      "Associate Software Tester"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Teacher": {
+    "summary": "Overview: A career as a Teacher. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Teacher",
+      "Teacher Intern",
+      "Associate Teacher"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "UX/UI Designer": {
+    "summary": "Overview: A career as a UX/UI Designer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior UX/UI Designer",
+      "UX/UI Designer Intern",
+      "Associate UX/UI Designer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Veterinarian": {
+    "summary": "Overview: A career as a Veterinarian. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Veterinarian",
+      "Veterinarian Intern",
+      "Associate Veterinarian"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  },
+  "Web Developer": {
+    "summary": "Overview: A career as a Web Developer. (Edit this to add a short summary.)",
+    "skills": [
+      "Fundamental skills (add specifics)",
+      "Communication/teamwork",
+      "Problem solving / domain fundamentals"
+    ],
+    "sample_courses": [
+      "Introductory course to get started (replace with platform & course name)",
+      "Intermediate/practical project course (replace)",
+      "Certification or advanced topic course (replace)"
+    ],
+    "job_titles": [
+      "Junior Web Developer",
+      "Web Developer Intern",
+      "Associate Web Developer"
+    ],
+    "next_steps": [
+      "Learn the fundamentals listed above",
+      "Complete 2–3 hands-on projects and add to portfolio",
+      "Apply for internships / entry-level roles"
+    ]
+  }
+}

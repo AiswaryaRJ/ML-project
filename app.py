@@ -3,11 +3,12 @@ import streamlit as st
 import joblib
 import numpy as np
 import pandas as pd
+from chatbot import get_response
+from recommender import recommend
 
-# ------------------ Page Config ------------------
 st.set_page_config(page_title="Career Guidance AI", layout="centered")
 st.title("Career Guidance AI")
-st.caption("Describe your interests/skills and get career suggestions, next steps, courses, salary info, and chatbot help.")
+st.caption("Describe your interests/skills and get career suggestions, courses, and chatbot help.")
 
 # ------------------ Career Info (75+ careers) ------------------
 career_info = {
@@ -102,41 +103,6 @@ courses_info = {
 }
 
 
-
-# ------------------ Sample Examples (30+) ------------------
-sample_examples = [
-    "I enjoy coding and building web applications",
-    "I like analyzing datasets and finding patterns",
-    "I am passionate about machine learning and AI",
-    "I enjoy designing user interfaces and interactions",
-    "I love creating graphics and visual art",
-    "I enjoy teaching and mentoring students",
-    "I like helping people with health and care",
-    "I want to build and run my own business",
-    "I like working with electronics and hardware",
-    "I enjoy writing articles and stories",
-    "I love photographing landscapes and people",
-    "I enjoy cooking and creating recipes",
-    "I like solving logical puzzles and math problems",
-    "I enjoy planning events and coordinating teams",
-    "I like studying environmental issues and sustainability",
-    "I want to design buildings and urban plans",
-    "I enjoy analyzing financial markets and investments",
-    "I like testing software and finding bugs",
-    "I enjoy working on embedded and IoT devices",
-    "I like producing music and audio content",
-    "I enjoy game design and development",
-    "I want to help people with counseling and therapy",
-    "I like researching scientific problems",
-    "I enjoy managing product lifecycles and roadmaps",
-    "I like building mobile apps and UX experiments",
-    "I enjoy marketing and social media campaigns",
-    "I like logistics and supply chain management",
-    "I enjoy working with animals and veterinary care",
-    "I like fashion design and sewing clothes",
-    "I enjoy learning about aviation and piloting"
-]
-
 # ------------------ Load model + vectorizer ------------------
 @st.cache_resource
 def load_model():
@@ -168,6 +134,50 @@ def get_top_k(text, k=5):
     classes = model.classes_
     top_idx = np.argsort(probs)[::-1][:k]
     return [(classes[i], float(probs[i])) for i in top_idx]
+
+# ------------------ Sample examples (30+) ------------------
+sample_examples = [
+    # (Paste the 30+ sample_examples from your previous code here)
+    # ------------------ Sample Examples (30+) ------------------
+
+    "I enjoy coding and building web applications",
+    "I like analyzing datasets and finding patterns",
+    "I am passionate about machine learning and AI",
+    "I enjoy designing user interfaces and interactions",
+    "I love creating graphics and visual art",
+    "I enjoy teaching and mentoring students",
+    "I like helping people with health and care",
+    "I want to build and run my own business",
+    "I like working with electronics and hardware",
+    "I enjoy writing articles and stories",
+    "I love photographing landscapes and people",
+    "I enjoy cooking and creating recipes",
+    "I like solving logical puzzles and math problems",
+    "I enjoy planning events and coordinating teams",
+    "I like studying environmental issues and sustainability",
+    "I want to design buildings and urban plans",
+    "I enjoy writing articles and stories",
+    "I love photographing landscapes and people",
+    "I enjoy cooking and creating recipes",
+    "I like solving logical puzzles and math problems",
+    "I enjoy planning events and coordinating teams",
+    "I like studying environmental issues and sustainability",
+    "I want to design buildings and urban plans",
+    "I enjoy analyzing financial markets and investments",
+    "I like testing software and finding bugs",
+    "I enjoy working on embedded and IoT devices",
+    "I like producing music and audio content",
+    "I enjoy game design and development",
+    "I want to help people with counseling and therapy",
+    "I like researching scientific problems",
+    "I enjoy managing product lifecycles and roadmaps",
+    "I like building mobile apps and UX experiments",
+    "I enjoy marketing and social media campaigns",
+    "I like logistics and supply chain management",
+    "I enjoy working with animals and veterinary care",
+    "I like fashion design and sewing clothes",
+    "I enjoy learning about aviation and piloting"
+]
 
 # ------------------ UI: Single interest entry ------------------
 st.subheader("Describe your interests or skills (single entry)")
@@ -205,9 +215,9 @@ if st.button("Suggest careers (multi)"):
         st.warning("Please select at least one interest from the list above.")
     else:
         combined_text = " . ".join(selected)
-        results_multi = get_top_k(combined_text, k=k_multi)
+        results = get_top_k(combined_text, k=k_multi)
         st.subheader("Top career suggestions for your combined interests")
-        for career, prob in results_multi:
+        for career, prob in results:
             info = career_info.get(career, {"description": "No description available", "next_steps": ["Explore further resources"]})
             prob_text = f"{prob:.2f}" if prob is not None else "—"
             st.markdown(f"### {career}  —  Confidence: {prob_text}")
@@ -220,24 +230,6 @@ if st.button("Suggest careers (multi)"):
                 for name, url in career_courses[career]:
                     st.markdown(f"- [{name}]({url})")
             st.markdown("---")
-
-# ------------------ Salary Conversion ------------------
-st.subheader("Salary Conversion")
-base_salary = st.number_input("Enter salary in INR", min_value=0.0, value=500000.0)
-st.write("Select target currency or enter manual conversion rate:")
-currency_options = ["USD", "EUR", "GBP", "AUD", "CAD", "JPY", "KRW (South Korea)", "AED (Dubai)", "EUR (Europe)"]
-selected_currency = st.selectbox("Currency", currency_options)
-manual_rate = st.number_input("Manual conversion rate (optional)", value=0.0)
-
-# Example exchange rates (update dynamically if you want)
-exchange_rates = {
-    "USD": 0.012, "EUR": 0.011, "GBP": 0.0098, "AUD": 0.018, "CAD": 0.016,
-    "JPY": 1.65, "KRW (South Korea)": 16.0, "AED (Dubai)": 0.044, "EUR (Europe)": 0.011
-}
-
-rate = manual_rate if manual_rate > 0 else exchange_rates.get(selected_currency, 1)
-converted_salary = base_salary * rate
-st.write(f"Salary in {selected_currency}: {converted_salary:,.2f}")
 
 # ------------------ Bulk CSV Predictions ------------------
 st.subheader("Bulk CSV Predictions")
@@ -257,67 +249,37 @@ if uploaded_file:
     except Exception as e:
         st.error(f"Error reading CSV: {e}")
 
-# ------------------ Chatbot (3+ sentences answers) ------------------
-st.subheader("Chatbot Assistant 🤖")
-user_msg = st.text_input("Ask me something about careers, courses, skills, or next steps:")
+# ------------------ Chatbot Section ------------------
+st.header("🤖 Career Guidance Chatbot")
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-def chatbot_response(user_input):
-    import random
-    user_input = user_input.lower()
-    response = "Sorry, I couldn't understand your query. Try asking about a specific career, skills, or courses."
+user_input = st.text_input("Ask me anything about careers, skills, or courses:")
 
-    matched_career = None
-    for career in career_info:
-        if career.lower() in user_input:
-            matched_career = career
-            break
+if user_input:
+    response = get_response(user_input)
+    st.session_state.chat_history.append({"user": user_input, "bot": response})
 
-    if matched_career:
-        description = career_info[matched_career]["description"]
-        steps = ", ".join(career_info[matched_career]["next_steps"])
-        courses_list = career_courses.get(matched_career, [])
-        courses_text = ", ".join([c[0] for c in courses_list]) if courses_list else "Check online platforms like Coursera, Udemy, edX for relevant courses."
+for chat in st.session_state.chat_history:
+    st.markdown(f"**You:** {chat['user']}")
+    st.markdown(f"**Bot:** {chat['bot']}\n")
 
-        # Ensure 3+ sentences
-        if "how to become" in user_input or "steps" in user_input:
-            response = (
-                f"Becoming a {matched_career} requires dedication and consistent learning. "
-                f"You should follow these steps: {steps}. "
-                f"Additionally, taking relevant courses like {courses_text} can greatly enhance your skills and knowledge."
-            )
-        elif "what is" in user_input:
-            response = (
-                f"A {matched_career} is {description}. "
-                f"This role typically involves learning specific skills and tools to excel in the field. "
-                f"Following structured steps and courses can help you succeed as a {matched_career}."
-            )
-        elif "course" in user_input or "learn" in user_input:
-            response = (
-                f"To become proficient in {matched_career}, you can take courses such as {courses_text}. "
-                f"These courses provide both theoretical and practical knowledge. "
-                f"Combining them with hands-on projects will make your learning more effective."
-            )
-        elif "skill" in user_input or "skills" in user_input:
-            skills = ", ".join(career_info[matched_career]["next_steps"][:3])
-            response = (
-                f"Important skills for a {matched_career} include: {skills}. "
-                f"Developing these skills will make you more competitive in the job market. "
-                f"Practice and real-world application are key to mastering them."
-            )
+# ------------------ Recommended Jobs/Courses for last single suggestion ------------------
+st.subheader("Recommended Jobs / Courses for top suggestion (single)")
+if 'results' in locals() and results:
+    top_career = results[0][0]
+    st.write(f"Top predicted career: **{top_career}**")
+    try:
+        recs = recommend(top_career)
+        if recs:
+            st.write("**Recommender:**")
+            for r in recs:
+                st.write(f"- {r}")
         else:
-            response = (
-                f"{matched_career}: {description}. "
-                f"To excel in this career, follow these steps: {steps}. "
-                f"Additionally, enrolling in relevant courses like {courses_text} can provide a strong foundation."
-            )
-
-    return response
-
-if st.button("Chat"):
-    if user_msg.strip():
-        reply = chatbot_response(user_msg)
-        st.info(reply)
+            st.write("No recommender entries found for this career.")
+    except Exception:
+        st.write("Recommender module error or no recommendations available.")
 
 # ------------------ Footer ------------------
 st.markdown("---")
-st.write("Explore careers, courses, and salary conversions. For more customizations, update the code or ask in chat.")
+st.write("For more customizations (filter by industry, experience, or location), update the code or ask in the chatbot.")

@@ -3,6 +3,7 @@ import streamlit as st
 import joblib
 import numpy as np
 import pandas as pd
+import difflib
 from chatbot import get_response
 from recommender import recommend
 
@@ -183,6 +184,10 @@ sample_examples = [
 ]
 
 # ---------------- Multi-Interest ----------------
+# add this import at top of the file if not present:
+# import difflib
+
+# ---------------- Multi-Interest ----------------
 st.subheader("Select multiple interests (up to 5)")
 selected = st.multiselect("Choose:", options=sample_examples, max_selections=5)
 k_multi = st.slider("How many suggestions?", 1, 5, 3)
@@ -193,25 +198,82 @@ if st.button("Suggest careers"):
     else:
         combined = ". ".join(selected)
         results = get_top_k(combined, k=k_multi)
+
         st.subheader("Top career suggestions")
-        for career, prob in results:
-            info = career_info.get(career, {"description": "No description", "next_steps": ["Explore further"]})
-            st.markdown(f"### {career} — Confidence: {prob:.2f}")
-            st.write(f"**Description:** {info['description']}")
-            st.write("**Next steps:**")
-            for step in info['next_steps']:
-                st.write(f"- {step}")
-            if career in career_courses:
+
+        # prepare a normalized-key -> actual-key map for lookup
+        key_map = {k.strip().lower(): k for k in career_info.keys()}
+
+        # iterate results (career_raw may not be a string)
+        for career_raw, prob in results:
+            # 1) make string and normalize
+            career_str = str(career_raw)
+            career_norm = career_str.strip().lower()
+
+            # 2) direct normalized lookup (preferred)
+            real_key = key_map.get(career_norm)
+
+            # 3) exact-case-insensitive fallback
+            if real_key is None:
+                for k in career_info.keys():
+                    if k.lower() == career_norm:
+                        real_key = k
+                        break
+
+            # 4) fuzzy match fallback (if still None)
+            if real_key is None:
+                candidate = difflib.get_close_matches(career_str, list(career_info.keys()), n=1, cutoff=0.6)
+                if candidate:
+                    real_key = candidate[0]
+
+            # 5) final fallback to the original string (no crash)
+            if real_key is None:
+                real_key = career_str  # will display whatever the model returned
+
+            # get career info safely
+            info = career_info.get(real_key, {"description": "No description available.", "next_steps": []})
+            prob_text = f"{prob:.2f}" if prob is not None else "—"
+
+            st.markdown(f"### {real_key} — Confidence: {prob_text}")
+            st.write(f"**Description:** {info.get('description','No description available.')}")
+            next_steps = info.get("next_steps", [])
+            if next_steps:
+                st.write("**Next steps:**")
+                for step in next_steps:
+                    st.write(f"- {step}")
+            else:
+                st.write("**Next steps:** N/A")
+
+            # Show courses safely — career_courses keys might differ in naming/format.
+            # Try several lookup strategies.
+            courses = None
+            if real_key in career_courses:
+                courses = career_courses[real_key]
+            elif career_norm in career_courses:
+                courses = career_courses[career_norm]
+            else:
+                # try fuzzy match in career_courses keys
+                cc_match = difflib.get_close_matches(real_key, list(career_courses.keys()), n=1, cutoff=0.6)
+                if cc_match:
+                    courses = career_courses.get(cc_match[0])
+
+            if courses:
                 st.write("**Recommended courses:**")
-    # Normalize the career string to avoid spaces/case mismatches
-career = career.strip().title()
+                # support both tuple(name,url) lists and plain-string lists
+                for item in courses:
+                    if isinstance(item, (list, tuple)) and len(item) >= 1:
+                        name = item[0]
+                        url = item[1] if len(item) > 1 else None
+                        if url:
+                            st.markdown(f"- [{name}]({url})")
+                        else:
+                            st.write(f"- {name}")
+                    else:
+                        st.write(f"- {item}")
+            else:
+                st.write("**Recommended courses:** No data available.")
 
-if career in career_courses:
-    for course in career_courses[career]:
-        st.write(f"- {course}")
-else:
-    st.warning(f"No course information available for: {career}")
-
+            st.markdown("---")
 
 
 # ---------------- Bulk CSV ----------------

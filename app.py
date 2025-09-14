@@ -203,12 +203,15 @@ if st.button("Suggest careers"):
                 st.write(f"- {step}")
             if career in career_courses:
                 st.write("**Recommended courses:**")
+    # Normalize the career string to avoid spaces/case mismatches
+career = career.strip().title()
+
+if career in career_courses:
     for course in career_courses[career]:
-        if isinstance(course, tuple):
-            name, url = course
-            st.markdown(f"- [{name}]({url})")
-        else:
-            st.write(f"- {course}")
+        st.write(f"- {course}")
+else:
+    st.warning(f"No course information available for: {career}")
+
 
 
 # ---------------- Bulk CSV ----------------

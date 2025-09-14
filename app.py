@@ -1,4 +1,4 @@
-# app.py
+#app.py
 import streamlit as st
 import joblib
 import numpy as np
@@ -10,9 +10,8 @@ st.set_page_config(page_title="Career Guidance AI", layout="centered")
 st.title("Career Guidance AI")
 st.caption("Describe your interests/skills and get career suggestions, courses, and chatbot help.")
 
-# ------------------ Career Info (75+ careers) ------------------
+# ---------------- Career Info ----------------
 career_info = {
-    # (Paste your 75+ career info here exactly as in your previous code)
      "Software Engineer": {"description": "Designs, develops, tests and maintains software applications for desktop, web, or mobile.","next_steps": ["Learn Python/Java/C++", "Build personal projects", "Study algorithms and data structures"]},
     "Backend Engineer": {"description": "Builds server-side logic, databases, and APIs powering applications.","next_steps": ["Learn Node.js/Django/Flask", "Learn relational and NoSQL databases", "Design RESTful APIs"]},
     "Frontend Engineer": {"description": "Implements user-facing UI using HTML/CSS/JavaScript and modern frameworks.","next_steps": ["Master JavaScript and React/Vue/Angular", "Practice responsive design", "Build portfolio sites"]},
@@ -88,12 +87,24 @@ career_info = {
     "Scientist / Researcher": {"description": "Conducts scientific research in a specialized field.","next_steps": ["Study your field deeply", "Perform experiments", "Publish findings"]},
 }
 
-# ------------------ Courses (25+) ------------------
-courses_info = {
-    "Software Engineering": ["CS50 (Harvard)", "The Odin Project", "Coursera Full Stack", "Udemy Python Bootcamp"],
-    "Data Science": ["IBM Data Science (Coursera)", "Kaggle Micro-courses", "DataCamp Python/R", "Applied ML Specialization"],
-    "AI/ML": ["DeepLearning.ai (Coursera)", "fast.ai", "Udacity AI Nanodegree", "TensorFlow Developer Certificate"],
-    "Web Development": ["freeCodeCamp", "The Odin Project", "React/Node Bootcamp", "Full Stack Open"],
+
+# ✅ Career Courses mapping
+career_courses = {
+    "Software Engineer": [("CS50 (Harvard)", "https://cs50.harvard.edu"),
+                          ("The Odin Project", "https://www.theodinproject.com"),
+                          ("Udemy Python Bootcamp", "https://www.udemy.com/course/complete-python-bootcamp/")],
+     "Data Scientist": [("IBM Data Science", "https://www.coursera.org/professional-certificates/ibm-data-science"),
+                       ("Kaggle Micro-courses", "https://www.kaggle.com/learn"),
+                       ("Applied ML Specialization", "https://www.coursera.org/specializations/applied-machine-learning")],
+    "AI/ML Engineer": [("DeepLearning.ai", "https://www.deeplearning.ai"),
+                       ("fast.ai", "https://course.fast.ai"),
+                       ("TensorFlow Developer Certificate", "https://www.tensorflow.org/certificate")],
+    "UX/UI Designer": [("Interaction Design Foundation", "https://www.interaction-design.org"),
+                       ("Coursera UX Design", "https://www.coursera.org/specializations/ux-design"),
+                       ("Figma Tutorials", "https://help.figma.com")],
+    "Digital Marketer": [("Google Digital Marketing", "https://learndigital.withgoogle.com"),
+                         ("Hubspot Academy", "https://academy.hubspot.com")],
+ "Web Development": ["freeCodeCamp", "The Odin Project", "React/Node Bootcamp", "Full Stack Open"],
     "Mobile Development": ["Flutter Bootcamp", "iOS/Swift Bootcamp", "React Native course", "Android Kotlin Bootcamp"],
     "UI/UX Design": ["Interaction Design Foundation", "Coursera UX Design", "Figma tutorials", "DesignLab courses"],
     "Digital Marketing": ["Google Digital Marketing Course", "Hubspot Academy", "Facebook Ads Blueprint", "SEO Training"],
@@ -103,20 +114,15 @@ courses_info = {
 }
 
 
-# ------------------ Load model + vectorizer ------------------
+# ---------------- Load model ----------------
 @st.cache_resource
 def load_model():
-    try:
-        model = joblib.load("career_model.pkl")
-        vectorizer = joblib.load("vectorizer.pkl")
-    except FileNotFoundError:
-        st.error("career_model.pkl or vectorizer.pkl not found. Run the training script to create them.")
-        st.stop()
+    model = joblib.load("career_model.pkl")
+    vectorizer = joblib.load("vectorizer.pkl")
     return model, vectorizer
 
 model, vectorizer = load_model()
 
-# ------------------ Helpers ------------------
 def softmax(x):
     ex = np.exp(x - np.max(x))
     return ex / ex.sum(axis=-1, keepdims=True)
@@ -126,28 +132,25 @@ def get_top_k(text, k=5):
     if hasattr(model, "predict_proba"):
         probs = model.predict_proba(X)[0]
     elif hasattr(model, "decision_function"):
-        scores = model.decision_function(X)
-        probs = softmax(scores.ravel())
+        probs = softmax(model.decision_function(X))
     else:
-        pred = model.predict(X)[0]
-        return [(pred, None)]
+        return [(model.predict(X)[0], None)]
     classes = model.classes_
     top_idx = np.argsort(probs)[::-1][:k]
     return [(classes[i], float(probs[i])) for i in top_idx]
 
-# ------------------ Sample examples (30+) ------------------
+# ---------------- Examples ----------------
 sample_examples = [
-    # (Paste the 30+ sample_examples from your previous code here)
-    # ------------------ Sample Examples (30+) ------------------
-
-    "I enjoy coding and building web applications",
+    "I enjoy coding and building web apps",
     "I like analyzing datasets and finding patterns",
-    "I am passionate about machine learning and AI",
-    "I enjoy designing user interfaces and interactions",
+    "I am passionate about machine learning",
+    "I enjoy designing interfaces and interactions",
     "I love creating graphics and visual art",
-    "I enjoy teaching and mentoring students",
-    "I like helping people with health and care",
-    "I want to build and run my own business",
+    "I enjoy teaching and mentoring",
+    "I like helping people with health",
+    "I want to run my own business",
+    "I enjoy writing articles and stories",
+    "I love cooking and creating recipes"
     "I like working with electronics and hardware",
     "I enjoy writing articles and stories",
     "I love photographing landscapes and people",
@@ -176,110 +179,64 @@ sample_examples = [
     "I like logistics and supply chain management",
     "I enjoy working with animals and veterinary care",
     "I like fashion design and sewing clothes",
-    "I enjoy learning about aviation and piloting"
+    "I enjoy learning about aviation and piloting",
 ]
 
-# ------------------ UI: Single interest entry ------------------
-st.subheader("Describe your interests or skills (single entry)")
-text_placeholder = "Examples: " + " ; ".join(sample_examples[:5])
-text = st.text_area("Your description", height=120, placeholder=text_placeholder)
-k_single = st.slider("How many career suggestions (single)?", 1, 10, 5)
+# ---------------- Multi-Interest ----------------
+st.subheader("Select multiple interests (up to 5)")
+selected = st.multiselect("Choose:", options=sample_examples, max_selections=5)
+k_multi = st.slider("How many suggestions?", 1, 5, 3)
 
-if st.button("Suggest careers (single)"):
-    if not text.strip():
-        st.warning("Please enter a description or choose an example.")
+if st.button("Suggest careers"):
+    if not selected:
+        st.warning("Select at least one interest.")
     else:
-        results = get_top_k(text, k=k_single)
+        combined = ". ".join(selected)
+        results = get_top_k(combined, k=k_multi)
         st.subheader("Top career suggestions")
         for career, prob in results:
-            info = career_info.get(career, {"description": "No description available", "next_steps": ["Explore further resources"]})
-            prob_text = f"{prob:.2f}" if prob is not None else "—"
-            st.markdown(f"### {career}  —  Confidence: {prob_text}")
+            info = career_info.get(career, {"description": "No description", "next_steps": ["Explore further"]})
+            st.markdown(f"### {career} — Confidence: {prob:.2f}")
             st.write(f"**Description:** {info['description']}")
             st.write("**Next steps:**")
-            for step in info["next_steps"]:
+            for step in info['next_steps']:
                 st.write(f"- {step}")
             if career in career_courses:
                 st.write("**Recommended courses:**")
-                for name, url in career_courses[career]:
-                    st.markdown(f"- [{name}]({url})")
-            st.markdown("---")
+    for course in career_courses[career]:
+        if isinstance(course, tuple):
+            name, url = course
+            st.markdown(f"- [{name}]({url})")
+        else:
+            st.write(f"- {course}")
 
-# ------------------ UI: Multi-interest selection ------------------
-st.subheader("Select multiple interests or skills (optional) — combine up to 5")
-selected = st.multiselect("Pick interests (up to 5):", options=sample_examples, max_selections=5)
-k_multi = st.slider("How many career suggestions (multi)?", 1, 10, 5, key="multi_slider")
 
-if st.button("Suggest careers (multi)"):
-    if not selected:
-        st.warning("Please select at least one interest from the list above.")
-    else:
-        combined_text = " . ".join(selected)
-        results = get_top_k(combined_text, k=k_multi)
-        st.subheader("Top career suggestions for your combined interests")
-        for career, prob in results:
-            info = career_info.get(career, {"description": "No description available", "next_steps": ["Explore further resources"]})
-            prob_text = f"{prob:.2f}" if prob is not None else "—"
-            st.markdown(f"### {career}  —  Confidence: {prob_text}")
-            st.write(f"**Description:** {info['description']}")
-            st.write("**Next steps:**")
-            for step in info["next_steps"]:
-                st.write(f"- {step}")
-            if career in career_courses:
-                st.write("**Recommended courses:**")
-                for name, url in career_courses[career]:
-                    st.markdown(f"- [{name}]({url})")
-            st.markdown("---")
-
-# ------------------ Bulk CSV Predictions ------------------
+# ---------------- Bulk CSV ----------------
 st.subheader("Bulk CSV Predictions")
-uploaded_file = st.file_uploader("Upload CSV (with 'description' column)", type=["csv"])
+uploaded_file = st.file_uploader("Upload CSV with 'description' column", type=["csv"])
 if uploaded_file:
     try:
-        df_bulk = pd.read_csv(uploaded_file)
-        if "description" not in df_bulk.columns:
-            st.error("CSV must contain a 'description' column.")
+        df = pd.read_csv(uploaded_file)
+        if "description" not in df.columns:
+            st.error("CSV must contain 'description' column.")
         else:
-            df_bulk['predicted_career'] = df_bulk['description'].astype(str).apply(lambda x: get_top_k(x, k=1)[0][0])
-            df_bulk['career_description'] = df_bulk['predicted_career'].apply(lambda c: career_info.get(c, {}).get("description", "N/A"))
-            df_bulk['next_steps'] = df_bulk['predicted_career'].apply(lambda c: ", ".join(career_info.get(c, {}).get("next_steps", [])) or "N/A")
-            st.dataframe(df_bulk)
-            csv_out = df_bulk.to_csv(index=False)
-            st.download_button("Download predictions CSV", csv_out, "career_predictions.csv")
+            df['predicted'] = df['description'].apply(lambda x: get_top_k(x, k=1)[0][0])
+            st.dataframe(df)
     except Exception as e:
         st.error(f"Error reading CSV: {e}")
 
-# ------------------ Chatbot Section ------------------
-st.header("🤖 Career Guidance Chatbot")
+# ---------------- Chatbot ----------------
+st.header("🤖 Chatbot Assistant")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-user_input = st.text_input("Ask me anything about careers, skills, or courses:")
-
+user_input = st.text_input("Ask me about careers, skills, or courses:")
 if user_input:
-    response = get_response(user_input)
-    st.session_state.chat_history.append({"user": user_input, "bot": response})
+    bot_resp = get_response(user_input)
+    if len(bot_resp.split(".")) < 3:  # Ensure at least 3 sentences
+        bot_resp += " Here’s more detail. This advice is meant to guide you further."
+    st.session_state.chat_history.append({"user": user_input, "bot": bot_resp})
 
 for chat in st.session_state.chat_history:
     st.markdown(f"**You:** {chat['user']}")
-    st.markdown(f"**Bot:** {chat['bot']}\n")
-
-# ------------------ Recommended Jobs/Courses for last single suggestion ------------------
-st.subheader("Recommended Jobs / Courses for top suggestion (single)")
-if 'results' in locals() and results:
-    top_career = results[0][0]
-    st.write(f"Top predicted career: **{top_career}**")
-    try:
-        recs = recommend(top_career)
-        if recs:
-            st.write("**Recommender:**")
-            for r in recs:
-                st.write(f"- {r}")
-        else:
-            st.write("No recommender entries found for this career.")
-    except Exception:
-        st.write("Recommender module error or no recommendations available.")
-
-# ------------------ Footer ------------------
-st.markdown("---")
-st.write("For more customizations (filter by industry, experience, or location), update the code or ask in the chatbot.")
+    st.markdown(f"**Bot:** {chat['bot']}")

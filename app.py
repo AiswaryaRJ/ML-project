@@ -6,6 +6,14 @@ import pandas as pd
 import difflib
 from chatbot import get_response
 from recommender import recommend
+# add these near the top of app.py with your other imports
+import io
+import re
+import fitz                # PyMuPDF for PDF text extraction
+from docx import Document # python-docx for .docx
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 st.set_page_config(page_title="Career Guidance AI", layout="centered")
 st.title("Career Guidance AI")
@@ -305,3 +313,213 @@ if user_input:
 for chat in st.session_state.chat_history:
     st.markdown(f"**You:** {chat['user']}")
     st.markdown(f"**Bot:** {chat['bot']}")
+
+
+# ------------------ Resume Analyzer ------------------
+st.subheader("📄 Resume Analyzer")
+
+st.info("Upload a PDF, DOCX, or TXT resume. The analyzer checks keyword coverage, sections, contact info, and alignment with careers defined in the app. Keep private data in mind when uploading.")
+
+uploaded_resume = st.file_uploader("Upload your resume (PDF / DOCX / TXT)", type=["pdf", "docx", "txt"])
+
+# Option: allow user to choose a target career to tailor the analysis or let system auto-detect
+career_options = ["Auto-detect (best match)"] + list(career_info.keys())
+target_career = st.selectbox("Target career for tailoring (optional)", career_options)
+
+if uploaded_resume:
+    # read bytes once
+    resume_bytes = uploaded_resume.read()
+
+    # 1) extract text depending on filetype
+    resume_text = ""
+    try:
+        if uploaded_resume.name.lower().endswith(".pdf"):
+            # PyMuPDF extraction
+            pdf_doc = fitz.open(stream=resume_bytes, filetype="pdf")
+            for p in pdf_doc:
+                resume_text += p.get_text()
+        elif uploaded_resume.name.lower().endswith(".docx"):
+            # python-docx extraction
+            doc = Document(io.BytesIO(resume_bytes))
+            resume_text = "\n".join([p.text for p in doc.paragraphs])
+        else:
+            # txt or fallback
+            resume_text = resume_bytes.decode(errors="ignore")
+    except Exception as e:
+        st.error(f"Could not extract resume text: {e}")
+        resume_text = ""
+
+    if not resume_text.strip():
+        st.warning("Resume text could not be extracted or is empty.")
+    else:
+        st.write("### Extracted resume preview (first 1000 characters)")
+        st.text_area("Resume preview", resume_text[:1000], height=180)
+
+        # ---------------- prepare career texts for comparison ----------------
+        career_names = list(career_info.keys())
+        career_texts = [
+            (career_info[name].get("description", "") + " " + " ".join(career_info[name].get("next_steps", []))).strip()
+            for name in career_names
+        ]
+
+        # build TF-IDF on career descriptions + resume
+        all_texts = career_texts + [resume_text]
+        tfidf = TfidfVectorizer(ngram_range=(1, 2), stop_words="english")
+        try:
+            matrix = tfidf.fit_transform(all_texts)
+        except Exception as e:
+            st.error(f"Error computing TF-IDF: {e}")
+            matrix = None
+
+        if matrix is not None:
+            career_matrix = matrix[:-1]
+            resume_vec = matrix[-1]
+
+            # cosine similarities
+            sims = cosine_similarity(resume_vec, career_matrix)[0]
+            # top matches
+            top_n = 5
+            top_idx = sims.argsort()[::-1][:top_n]
+            top_matches = [(career_names[i], float(sims[i])) for i in top_idx]
+
+            st.write("### Top career matches (by content similarity):")
+            for name, score in top_matches:
+                st.write(f"- **{name}** — similarity {score:.2f}")
+
+            # Determine which career to tailor against
+            if target_career == "Auto-detect (best match)":
+                chosen_career = top_matches[0][0]
+            else:
+                chosen_career = target_career
+
+            st.write(f"### Tailored analysis for: **{chosen_career}**")
+
+            # Get TF-IDF top terms for the chosen career
+            feature_names = tfidf.get_feature_names_out()
+            chosen_idx = career_names.index(chosen_career) if chosen_career in career_names else None
+            career_top_terms = []
+            if chosen_idx is not None:
+                career_vec = career_matrix[chosen_idx].toarray().ravel()
+                # pick top terms (non-zero)
+                top_terms_idx = career_vec.argsort()[::-1][:30]
+                for idx in top_terms_idx:
+                    if career_vec[idx] > 0:
+                        term = feature_names[idx]
+                        career_top_terms.append(term)
+                # unique & limit
+                career_top_terms = list(dict.fromkeys(career_top_terms))[:20]
+
+            # analyze presence of keywords in resume
+            resume_lower = resume_text.lower()
+            matched_keywords = []
+            missing_keywords = []
+            for term in career_top_terms:
+                if term.lower() in resume_lower:
+                    matched_keywords.append(term)
+                else:
+                    missing_keywords.append(term)
+
+            st.write("**Top keywords for this career (from description):**")
+            if career_top_terms:
+                st.write(", ".join(career_top_terms[:15]))
+            else:
+                st.write("No top keywords extracted for this career.")
+
+            st.write("**Keywords found in resume:**")
+            if matched_keywords:
+                st.success(", ".join(matched_keywords[:20]))
+            else:
+                st.warning("No top career keywords were found in the resume.")
+
+            st.write("**Keywords missing (consider adding if relevant):**")
+            if missing_keywords:
+                st.info(", ".join(missing_keywords[:20]))
+            else:
+                st.write("None — good coverage.")
+
+            # ---------------- basic resume checks ----------------
+            # contact info
+            email_re = r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"
+            phone_re = r"(\+?\d[\d\-\s]{7,}\d)"
+            emails = re.findall(email_re, resume_text)
+            phones = re.findall(phone_re, resume_text)
+
+            # sections
+            sections = {
+                "experience": bool(re.search(r"\bexperience\b", resume_lower)),
+                "education": bool(re.search(r"\beducation\b", resume_lower)),
+                "skills": bool(re.search(r"\bskill\b", resume_lower)),
+                "projects": bool(re.search(r"\bproject\b", resume_lower)),
+            }
+
+            # quantifiable achievements
+            numbers = re.findall(r"\b\d{1,4}\b", resume_text)
+            quant_present = any(int(n) >= 1 for n in numbers) if numbers else False
+
+            # word count
+            word_count = len(re.findall(r"\w+", resume_text))
+
+            st.write("### Quick checks")
+            st.write(f"- Word count: **{word_count}**")
+            st.write(f"- Email found: **{', '.join(emails) if emails else 'No'}**")
+            st.write(f"- Phone found (approx): **{', '.join(phones) if phones else 'No'}**")
+            st.write("- Sections found:")
+            for sec, present in sections.items():
+                st.write(f"  - {sec.title()}: {'Yes' if present else 'No'}")
+            st.write(f"- Quantifiable numbers found: {'Yes' if quant_present else 'No'}")
+
+            # ---------------- scoring (simple weighted heuristic) ----------------
+            sim_score = top_matches[0][1] if top_matches else 0.0
+            keyword_score = (len(matched_keywords) / len(career_top_terms)) if career_top_terms else 0.0
+            sections_score = (sum(sections.values()) / len(sections)) if sections else 0.0
+            contact_score = 1.0 if (emails or phones) else 0.0
+
+            overall = (0.5 * sim_score) + (0.25 * keyword_score) + (0.15 * sections_score) + (0.10 * contact_score)
+            overall_pct = round(overall * 100, 1)
+            st.markdown(f"## Overall alignment score: **{overall_pct}%**")
+
+            # ---------------- suggestions ----------------
+            st.write("### Suggestions to improve your resume")
+            if not emails and not phones:
+                st.warning("- Add contact information (email and at least one phone number).")
+            if not sections["experience"]:
+                st.info("- Add an 'Experience' section with bullet points showing responsibilities and achievements.")
+            if not sections["skills"]:
+                st.info("- Add a 'Skills' section listing technical and domain skills (e.g., Python, SQL, React).")
+            if not quant_present:
+                st.info("- Add quantifiable achievements (numbers/percentages) to show impact (e.g., 'reduced load time by 30%').")
+            if missing_keywords:
+                st.info(f"- Consider adding relevant keywords for **{chosen_career}**: {', '.join(missing_keywords[:8])}")
+            if word_count < 200:
+                st.info("- Your resume is short — add more detail about projects or impact (aim 300–800 words).")
+
+            # ---------------- Downloadable report ----------------
+            report_lines = [
+                "Resume Analyzer Report",
+                "=======================",
+                f"Target career: {chosen_career}",
+                f"Overall alignment score: {overall_pct}%",
+                "",
+                "Top career matches:",
+            ]
+            for name, score in top_matches:
+                report_lines.append(f"- {name}: {score:.2f}")
+            report_lines += ["", "Matched keywords:", ", ".join(matched_keywords) or "None"]
+            report_lines += ["", "Missing keywords (suggested):", ", ".join(missing_keywords) or "None"]
+            report_lines += ["", "Quick checks:"]
+            report_lines += [f"- Word count: {word_count}", f"- Email found: {', '.join(emails) or 'No'}", f"- Phone found: {', '.join(phones) or 'No'}"]
+            report_lines += ["Sections found:"]
+            for sec, present in sections.items():
+                report_lines.append(f"- {sec.title()}: {'Yes' if present else 'No'}")
+            report_lines += ["", "Suggestions:"]
+            if not emails and not phones:
+                report_lines.append("- Add contact information (email & phone).")
+            if not sections["experience"]:
+                report_lines.append("- Add an Experience section with achievements.")
+            if not quant_present:
+                report_lines.append("- Add quantifiable metrics (numbers/percentages).")
+            if missing_keywords:
+                report_lines.append(f"- Add missing keywords: {', '.join(missing_keywords[:20])}")
+
+            report_text = "\n".join(report_lines)
+            st.download_button("Download resume report (.txt)", report_text, file_name="resume_report.txt")

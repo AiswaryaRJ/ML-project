@@ -970,21 +970,38 @@ if uploaded_resume:
         report_text = "\n".join(report_lines)
         st.download_button("Download resume report", report_text, file_name="resume_report.txt")
 
-# ---------------- Chatbot ----------------
-st.header("🤖 Chatbot Assistant")
+#-----------Chatbot-----------------
+
+st.title("🤖 Chatbot Assistant")
+st.write("Ask me about careers, skills, or courses:")
+
+# ---- Initialize chat history ----
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-user_input = st.text_input("Ask me about careers, skills, or courses:")
-if user_input:
-    bot_resp = get_response(user_input)
-    if bot_resp.count(".") < 3:
-        bot_resp += " Here’s more detail. This information provides further guidance for your career planning."
-    st.session_state.chat_history.append({"user": user_input, "bot": bot_resp})
+# ---- Clear chat ----
+if st.button("🗑️ Clear Chat"):
+    st.session_state.chat_history = []
 
-for chat in st.session_state.chat_history:
-    # ---- Optional: Show older messages in a collapsible section ----
+# ---- User input ----
+user_input = st.text_input("Type your question here:")
+
+# ---- When user submits ----
+if user_input:
+    # Generate a dummy response (replace with your career model logic)
+    bot_response = f"I think you might enjoy exploring Librarian or Writer roles because you like books."
+    st.session_state.chat_history.append((user_input, bot_response))
+
+# ---- Show only the last 5 messages ----
+if st.session_state.chat_history:
+    st.subheader("Recent Conversation")
+    for user, bot in st.session_state.chat_history[-5:]:
+        st.markdown(f"**You:** {user}")
+        st.markdown(f"**Bot:** {bot}")
+
+# ---- Older messages collapsible ----
+if len(st.session_state.chat_history) > 5:
     with st.expander("Show Previous Messages"):
-        for user, bot in st.session_state.chat_history[:-5]:  # Older ones
-            st.write(f"**You:** {user}")
-            st.write(f"**Bot:** {bot}")
+        for user, bot in st.session_state.chat_history[:-5]:
+            st.markdown(f"**You:** {user}")
+            st.markdown(f"**Bot:** {bot}")

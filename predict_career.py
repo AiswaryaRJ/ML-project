@@ -115,3 +115,24 @@ if __name__ == "__main__":
     if csv_input.lower() == 'yes':
         csv_path = input("Enter CSV file path: ")
         bulk_predict(csv_path)
+        
+def predict_top_n(description, n=3):
+    """Return top-n career suggestions with probabilities using LogisticRegression."""
+    if not vectorizer or not model_logreg:
+        return []
+    desc_vec = vectorizer.transform([description])
+    probs = model_logreg.predict_proba(desc_vec)[0]
+    classes = model_logreg.classes_
+    # Sort by probability
+    top_indices = probs.argsort()[::-1][:n]
+    suggestions = []
+    for i in top_indices:
+        career = classes[i]
+        info = career_info.get(career, {"description": "N/A", "next_steps": []})
+        suggestions.append({
+            "career": career,
+            "probability": round(probs[i] * 100, 2),
+            "description": info["description"],
+            "next_steps": info["next_steps"]
+        })
+    return suggestions

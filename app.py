@@ -180,27 +180,6 @@ def get_tfidf_and_vectors(career_info_dict):
 
 tfidf, career_matrix, career_names = get_tfidf_and_vectors(career_info)
 
-# ---------------- Single Career Suggestion ----------------
-query = st.text_input("Enter your interests or skills:")
-if query:
-    result = cached_predict(query)
-    st.subheader("Career Suggestions")
-    for model_name in ["LogisticRegression", "RandomForest"]:
-        career = result.get(model_name, {}).get("career", "N/A")
-        st.markdown(f"**{model_name}:** {career}")
-        info = career_info.get(career, {"description": "No description", "next_steps": []})
-        st.write(f"Description: {info.get('description')}")
-        if info.get("next_steps"):
-            st.write("Next Steps:")
-            for step in info["next_steps"]:
-                st.write(f"- {step}")
-        courses = career_courses.get(career)
-        if courses:
-            st.write("Recommended Courses:")
-            for name, url in courses:
-                st.markdown(f"- [{name}]({url})")
-    st.markdown("---")
-
 # ---------------- Multi-Interest Career Suggestions ----------------
 sample_examples = [
     "I enjoy coding and building web apps",
@@ -235,34 +214,68 @@ sample_examples = [
     "I enjoy learning about aviation and piloting",
 ]
 
+# ---------------- MULTI CAREER SUGGESTIONS (REVISED) ----------------
+query = st.text_input("Enter your interests or skills:")
+k_single = st.slider("How many suggestions?", 1, 5, 3)
+
+if query:
+    # Use cosine similarity on TF-IDF to rank all careers and pick top k_single
+    query_vec = tfidf.transform([query])
+    sims = cosine_similarity(query_vec, career_matrix)[0]
+    top_idx = sims.argsort()[::-1][:k_single]
+    st.subheader("Top Career Suggestions")
+    for idx in top_idx:
+        career = career_names[idx]
+        info = career_info.get(career, {"description": "No description", "next_steps": []})
+        st.markdown(f"### {career}")
+        st.write(f"Description: {info.get('description')}")
+        if info.get("next_steps"):
+            st.write("**Next Steps:**")
+            for step in info["next_steps"]:
+                st.write(f"- {step}")
+        courses = career_courses.get(career)
+        if courses:
+            st.write("**Recommended Courses:**")
+            for c in courses:
+                if isinstance(c, tuple):
+                    st.markdown(f"- [{c[0]}]({c[1]})")
+                else:
+                    st.write(f"- {c}")
+        st.markdown("---")
+
+# ----- Multi-Interest Section -----
 st.subheader("Select multiple interests (up to 5)")
 selected = st.multiselect("Choose:", options=sample_examples, max_selections=5)
-k_multi = st.slider("How many suggestions?", 1, 5, 3)
+k_multi = st.slider("How many multi-interest suggestions?", 1, 5, 3)
 
 if st.button("Suggest careers"):
     if not selected:
         st.warning("Select at least one interest.")
     else:
         combined = ". ".join(selected)
-        result = cached_predict(combined)
+        query_vec = tfidf.transform([combined])
+        sims = cosine_similarity(query_vec, career_matrix)[0]
+        top_idx = sims.argsort()[::-1][:k_multi]
         st.subheader("Top Career Suggestions")
-        for model_name in ["LogisticRegression", "RandomForest"]:
-            career_raw = result.get(model_name, {}).get("career")
-            career_norm = career_raw.strip().lower() if career_raw else ""
-            real_key = key_map.get(career_norm, career_raw)
-            info = career_info.get(real_key, {"description": "No description", "next_steps": []})
-            st.markdown(f"**{model_name}: {real_key}**")
+        for idx in top_idx:
+            career = career_names[idx]
+            info = career_info.get(career, {"description": "No description", "next_steps": []})
+            st.markdown(f"### {career}")
             st.write(f"Description: {info.get('description')}")
             if info.get("next_steps"):
-                st.write("Next Steps:")
+                st.write("**Next Steps:**")
                 for step in info["next_steps"]:
                     st.write(f"- {step}")
-            courses = career_courses.get(real_key)
+            courses = career_courses.get(career)
             if courses:
-                st.write("Recommended Courses:")
-                for name, url in courses:
-                    st.markdown(f"- [{name}]({url})")
+                st.write("**Recommended Courses:**")
+                for c in courses:
+                    if isinstance(c, tuple):
+                        st.markdown(f"- [{c[0]}]({c[1]})")
+                    else:
+                        st.write(f"- {c}")
             st.markdown("---")
+
 
 # ---------------- Bulk CSV Predictions ----------------
 st.subheader("Bulk CSV Predictions")

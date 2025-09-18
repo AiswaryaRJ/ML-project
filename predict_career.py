@@ -3,18 +3,24 @@ import pandas as pd
 import os
 
 # --- Load the saved vectorizer and both models safely ---
-def safe_load(file_name):
-    if not os.path.exists(file_name):
-        print(f"⚠️ Warning: '{file_name}' not found. Using placeholder model.")
-        return None
-    with open(file_name, 'rb') as f:
-        return pickle.load(f)
+def safe_load(file_name, fallback_name=None):
+    # Try the primary file
+    if os.path.exists(file_name):
+        with open(file_name, 'rb') as f:
+            return pickle.load(f)
+    # Try a fallback name if provided
+    if fallback_name and os.path.exists(fallback_name):
+        with open(fallback_name, 'rb') as f:
+            return pickle.load(f)
+    print(f"⚠️ Warning: Could not find '{file_name}' or '{fallback_name}'.")
+    return None
 
 vectorizer = safe_load('vectorizer.pkl')
-model_logreg = safe_load('career_model_logreg.pkl')
+# Match the actual file you said exists: career_model_lr.pkl
+model_logreg = safe_load('career_model_logreg.pkl', fallback_name='career_model_lr.pkl')
 model_rf = safe_load('career_model_rf.pkl')
 
-# --- Career info dictionary (expandable) ---
+# --- Career info dictionary ---
 career_info = {
     "Software Engineer": {
         "description": "Designs and develops software applications.",
@@ -44,15 +50,16 @@ def predict_career(description):
         return {
             "LogisticRegression": {
                 "career": "Model not available",
-                "description": "Please upload the model files.",
+                "description": "Please upload or retrain the model files.",
                 "next_steps": []
             },
             "RandomForest": {
                 "career": "Model not available",
-                "description": "Please upload the model files.",
+                "description": "Please upload or retrain the model files.",
                 "next_steps": []
             }
         }
+
     desc_vector = vectorizer.transform([description])
     career_logreg = model_logreg.predict(desc_vector)[0]
     career_rf = model_rf.predict(desc_vector)[0]

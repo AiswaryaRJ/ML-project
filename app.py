@@ -106,57 +106,501 @@ career_info = {
     "Fitness Trainer / Coach": {"description": "Designs exercise programs and motivates clients for health and performance.","next_steps": ["Get certified", "Practice personal training", "Design nutrition and fitness plans"]},
     "Pilot / Aviation Professional": {"description": "Operates aircraft, ensuring safety and efficiency in travel.","next_steps": ["Obtain pilot license", "Complete flight hours", "Pass aviation exams"]},
     "Scientist / Researcher": {"description": "Conducts scientific research in a specialized field.","next_steps": ["Study your field deeply", "Perform experiments", "Publish findings"]},
-
+    "Software Engineer": {
+        "description": "Designs, develops, tests and maintains software applications.",
+        "next_steps": ["Learn Python/Java/C++", "Build personal projects", "Study algorithms and data structures"]
+    },
+    "Data Scientist": {
+        "description": "Analyzes large datasets to extract insights and build predictive models.",
+        "next_steps": ["Learn Python/R", "Study statistics & ML", "Work on Kaggle projects"]
+    },
+    "Graphic Designer": {
+        "description": "Creates visual content for branding, websites, and marketing materials.",
+        "next_steps": ["Master Photoshop/Illustrator", "Build a design portfolio", "Learn typography and color theory"]
+    },
+    "Mechanical Engineer": {
+        "description": "Designs, builds, and maintains mechanical systems and machines.",
+        "next_steps": ["Study CAD and SolidWorks", "Understand thermodynamics and mechanics", "Work on engineering projects"]
+    },
+    "Teacher": {
+        "description": "Educates and guides students, creating lesson plans and promoting learning.",
+        "next_steps": ["Earn teaching certification", "Prepare engaging lesson plans", "Develop classroom management skills"]
+    },
+    "Air Hostess": {
+        "description": "Ensures passenger safety and comfort during flights while providing excellent service.",
+        "next_steps": ["Complete flight attendant training", "Learn safety protocols", "Improve communication and customer service skills"]
+    },
+    "Tour Guide": {
+        "description": "Leads tourists and provides information on destinations and cultural sites.",
+        "next_steps": ["Study local history and culture", "Develop storytelling skills", "Learn foreign languages if needed"]
+    },
+    "Hydrologist": {
+        "description": "Studies water resources to manage and protect water systems.",
+        "next_steps": ["Study environmental science and hydrology", "Learn GIS and data analysis", "Participate in fieldwork projects"]
+    },
+    "Ambulance Driver": {
+        "description": "Provides emergency transport and basic medical assistance to patients.",
+        "next_steps": ["Obtain EMT or first aid certification", "Learn safe driving practices", "Develop crisis management skills"]
+    },
+    "Forensic Scientist": {
+        "description": "Analyzes physical evidence to help solve crimes.",
+        "next_steps": ["Study chemistry/biology forensics", "Practice lab techniques", "Learn criminal investigation procedures"]
+    },
+    "Pediatrician": {
+        "description": "Provides medical care to children and monitors their health and growth.",
+        "next_steps": ["Complete medical school and pediatric residency", "Learn child health assessment", "Stay updated on vaccinations and treatments"]
+    },
+    "Entrepreneur": {
+        "description": "Starts and manages businesses, developing products and strategies for growth.",
+        "next_steps": ["Identify business opportunities", "Learn financial and marketing basics", "Build a minimum viable product (MVP)"]
+    },
+    "Robotics Engineer": {
+        "description": "Designs and develops robots and automation systems.",
+        "next_steps": ["Study robotics and electronics", "Practice programming microcontrollers", "Work on robotic projects"]
+    },
+    "Advertising Executive": {
+        "description": "Creates advertising campaigns to promote brands and products.",
+        "next_steps": ["Learn marketing principles", "Develop creative writing and design skills", "Analyze ad performance metrics"]
+    },
+    "Firefighter": {
+        "description": "Responds to fires and emergencies to protect people and property.",
+        "next_steps": ["Complete fire safety training", "Develop physical fitness", "Learn emergency response protocols"]
+    },
+    "Nurse": {
+        "description": "Provides patient care, administers medications, and supports medical teams.",
+        "next_steps": ["Complete nursing degree and license", "Develop patient care skills", "Learn hospital procedures and recordkeeping"]
+    },
+    "Biotechnologist": {
+        "description": "Uses biological processes to develop products in medicine, agriculture, and industry.",
+        "next_steps": ["Study molecular biology and genetics", "Practice lab techniques", "Work on biotech research projects"]
+    },
+    "Microbiologist": {
+        "description": "Studies microorganisms and their impact on health, environment, and industry.",
+        "next_steps": ["Learn microbiology lab techniques", "Analyze microbial data", "Participate in research projects"]
+    },
+    "Doctor": {
+        "description": "Diagnoses, treats, and prevents illnesses, providing patient care.",
+        "next_steps": ["Complete medical school and residency", "Develop clinical skills", "Stay updated on medical research"]
+    },
+    "Farmer": {
+        "description": "Cultivates crops and raises livestock, managing farm operations sustainably.",
+        "next_steps": ["Learn modern agricultural practices", "Understand soil and crop management", "Adopt sustainable farming techniques"]
+    },
+    "B.Pharm Graduate": {
+        "description": "Prepares and dispenses medications while studying drug interactions and effects.",
+        "next_steps": ["Study pharmacy principles", "Gain experience in a pharmacy or hospital", "Learn about pharmaceutical regulations"]
+    },
+    "Pharm.D Graduate": {
+        "description": "Manages clinical pharmacy operations and provides patient-specific medication care.",
+        "next_steps": ["Complete Pharm.D degree", "Learn clinical pharmacy practices", "Stay updated on new drugs and therapies"]
+    },
+    "Historian": {
+        "description": "Researches and analyzes historical events and societies.",
+        "next_steps": ["Study history and research methods", "Work with archives and museums", "Publish historical findings"]
+    },
+    "Librarian": {
+        "description": "Manages information resources and helps people access knowledge.",
+        "next_steps": ["Learn library science", "Develop cataloging and classification skills", "Assist students and researchers"]
+    },
+    "Medical Coder": {
+        "description": "Translates medical diagnoses into standardized codes for billing and records.",
+        "next_steps": ["Learn ICD and CPT coding", "Practice with medical records", "Stay updated on healthcare regulations"]
+    },
+    "Business": {
+        "description": "Manages and grows companies, making strategic decisions for success.",
+        "next_steps": ["Learn business management principles", "Develop leadership skills", "Study finance and marketing"]
+    },
+    "Food Critic": {
+        "description": "Reviews and evaluates food, restaurants, and culinary experiences.",
+        "next_steps": ["Develop food tasting skills", "Write reviews and articles", "Study culinary trends"]
+    },
+    "Animal Controller": {
+        "description": "Manages stray or dangerous animals and ensures public safety.",
+        "next_steps": ["Learn animal handling and care", "Understand animal behavior", "Work with animal welfare organizations"]
+    },
+    "Veterinary Doctor": {
+        "description": "Provides medical care for animals, diagnosing and treating illnesses.",
+        "next_steps": ["Complete veterinary degree", "Develop clinical skills for animals", "Stay updated on animal health practices"]
+    },
+    "Singer": {
+        "description": "Performs music vocally for audiences or recordings.",
+        "next_steps": ["Practice vocal techniques", "Perform regularly", "Study music theory and genres"]
+    },
+    "Dancer": {
+        "description": "Expresses ideas and stories through movement and choreography.",
+        "next_steps": ["Train in dance styles", "Join dance groups or performances", "Create a dance portfolio"]
+    },
+    "Actor/Actress": {
+        "description": "Portrays characters in theatre, film, or television.",
+        "next_steps": ["Take acting classes", "Participate in plays or short films", "Develop a showreel"]
+    },
+    "Athlete": {
+        "description": "Competes in sports and maintains physical fitness for performance.",
+        "next_steps": ["Train regularly in chosen sport", "Maintain proper nutrition", "Participate in competitions"]
+    },
+    "Coach": {
+        "description": "Trains and mentors athletes to improve their performance.",
+        "next_steps": ["Study coaching techniques", "Develop leadership and communication skills", "Gain experience with teams"]
+    },
+    "Writer": {
+        "description": "Creates written content for books, articles, or blogs.",
+        "next_steps": ["Practice writing daily", "Read widely for inspiration", "Build a portfolio or blog"]
+    },
+    "Content Writer": {
+        "description": "Produces online content for websites, blogs, and social media.",
+        "next_steps": ["Learn SEO and digital writing", "Write regularly", "Develop a portfolio of work"]
+    },
+    "Model": {
+        "description": "Promotes products or fashion by appearing in photoshoots, videos, or events.",
+        "next_steps": ["Build a modeling portfolio", "Attend casting calls", "Work with photographers and agencies"]
+    },
+    "Food Inspector": {
+        "description": "Ensures food safety and quality in production and restaurants.",
+        "next_steps": ["Learn food safety regulations", "Inspect kitchens and products", "Report and recommend improvements"]
+    },
+    "Chemical Engineer": {
+        "description": "Designs processes to produce chemicals, fuels, and materials efficiently.",
+        "next_steps": ["Study chemical engineering principles", "Work on lab and industrial projects", "Learn process optimization"]
+    },
+    "Lab Technician": {
+        "description": "Performs experiments, tests, and analysis in a laboratory setting.",
+        "next_steps": ["Learn lab procedures and safety", "Practice analyzing samples", "Maintain accurate lab records"]
+    },
+    "Florist": {
+        "description": "Designs and arranges flowers for events, decorations, and sales.",
+        "next_steps": ["Learn flower arranging techniques", "Understand plant care", "Create a portfolio of arrangements"]
+    },
+    "Makeup Artist": {
+        "description": "Applies cosmetics to enhance or alter appearance for events or media.",
+        "next_steps": ["Study makeup techniques", "Build a portfolio", "Work with photographers and clients"]
+    },
+    "Content Creator": {
+        "description": "Produces digital media content for social platforms and online audiences.",
+        "next_steps": ["Learn video and photo editing", "Create engaging content", "Grow audience on social media"]
+    },
+    "Marketing Manager": {
+        "description": "Plans and executes strategies to promote products and brands.",
+        "next_steps": ["Study marketing and advertising", "Analyze market trends", "Lead marketing campaigns"]
+    },
+    "Project Manager": {
+        "description": "Oversees projects from initiation to completion ensuring goals are met.",
+        "next_steps": ["Learn project management tools", "Develop leadership skills", "Manage project timelines and resources"]
+    },
+    "HR Professional": {
+        "description": "Manages recruitment, employee relations, and organizational development.",
+        "next_steps": ["Learn HR policies and laws", "Develop communication and negotiation skills", "Handle recruitment and employee engagement"]
+    },
+    "CEO": {
+        "description": "Leads and manages the overall operations of a company or organization.",
+        "next_steps": ["Develop leadership skills", "Study business strategy", "Make key organizational decisions"]
+    },
+    "Weather Forecaster": {
+        "description": "Analyzes meteorological data to predict weather conditions.",
+        "next_steps": ["Study meteorology and climate science", "Learn data modeling tools", "Practice interpreting weather patterns"]
+    },
+    "News Reader": {
+        "description": "Presents news and information to the public via TV, radio, or online platforms.",
+        "next_steps": ["Develop public speaking skills", "Stay updated on current events", "Practice news reading and reporting"]
+    },
+    "Architect": {
+        "description": "Designs buildings and structures, balancing aesthetics and functionality.",
+        "next_steps": ["Study architecture and design", "Learn CAD tools", "Develop a portfolio of projects"]
+    },
+    "Archaeologist": {
+        "description": "Studies human history through excavation and analysis of artifacts.",
+        "next_steps": ["Learn archaeology methods", "Participate in field digs", "Research historical findings"]
+    },
+    "Psychologist": {
+        "description": "Studies human behavior and mental processes to help individuals.",
+        "next_steps": ["Earn psychology degree", "Learn counseling techniques", "Conduct assessments and research"]
+    },
+    "Psychiatrist": {
+        "description": "Diagnoses and treats mental illnesses using therapy and medications.",
+        "next_steps": ["Complete medical school and psychiatry residency", "Learn psychotherapy", "Stay updated on mental health research"]
+    },
+    "Dentist": {
+        "description": "Examines, diagnoses, and treats dental issues to maintain oral health.",
+        "next_steps": ["Complete dental school", "Learn dental procedures", "Practice patient care and hygiene"]
+    },
+    "Electrician": {
+        "description": "Installs and maintains electrical systems in buildings and equipment.",
+        "next_steps": ["Learn electrical systems and safety", "Gain hands-on experience", "Obtain required certifications"]
+    },
+    "Biologist": {
+        "description": "Studies living organisms to understand life processes and ecosystems.",
+        "next_steps": ["Study biology and ecology", "Conduct experiments and field research", "Publish findings or work in labs"]
+    },
+    "Animator": {
+        "description": "Creates animations for movies, games, or advertisements.",
+        "next_steps": ["Learn animation software", "Develop storyboarding skills", "Build an animation portfolio"]
+    },
+    "Astronomer": {
+        "description": "Studies celestial objects, space, and the universe.",
+        "next_steps": ["Study astrophysics or astronomy", "Learn telescopes and observation techniques", "Analyze astronomical data"]
+    },
+    "Geologist": {
+        "description": "Studies the Earth, rocks, minerals, and natural resources.",
+        "next_steps": ["Learn geology and field mapping", "Conduct sample analysis", "Participate in field studies"]
+    },
+    "Mentalist": {
+        "description": "Performs mental feats and illusions using psychology and observation.",
+        "next_steps": ["Study human behavior and psychology", "Practice observation and memory techniques", "Develop performance skills"]
+    }
 }
 
-career_courses = {
+
+ccareer_resources = {
     "Software Engineer": [("CS50 (Harvard)", "https://cs50.harvard.edu"),
                           ("The Odin Project", "https://www.theodinproject.com"),
                           ("Udemy Python Bootcamp", "https://www.udemy.com/course/complete-python-bootcamp/")],
+
     "Data Scientist": [("IBM Data Science", "https://www.coursera.org/professional-certificates/ibm-data-science"),
                        ("Kaggle Micro-courses", "https://www.kaggle.com/learn"),
                        ("Applied ML Specialization", "https://www.coursera.org/specializations/applied-machine-learning")],
+
     "AI/ML Engineer": [("DeepLearning.ai", "https://www.deeplearning.ai"),
                        ("fast.ai", "https://course.fast.ai"),
                        ("TensorFlow Developer Certificate", "https://www.tensorflow.org/certificate")],
+
     "UX/UI Designer": [("Interaction Design Foundation", "https://www.interaction-design.org"),
                        ("Coursera UX Design", "https://www.coursera.org/specializations/ux-design"),
                        ("Figma Tutorials", "https://help.figma.com")],
-    "Digital Marketer": [("Google Digital Marketing", "https://learndigital.withgoogle.com"),
-                         ("Hubspot Academy", "https://academy.hubspot.com")],
-                        
-    "Web Development": ["freeCodeCamp", "The Odin Project", "React/Node Bootcamp", "Full Stack Open"],
-    "Mobile Development": ["Flutter Bootcamp", "iOS/Swift Bootcamp", "React Native course", "Android Kotlin Bootcamp"],
-    "UI/UX Design": ["Interaction Design Foundation", "Coursera UX Design", "Figma tutorials", "DesignLab courses"],
-    "Digital Marketing": ["Google Digital Marketing Course", "Hubspot Academy", "Facebook Ads Blueprint", "SEO Training"],
-    "Finance": ["Coursera Finance Specializations", "CFA Prep", "Wall Street Prep", "Financial Modeling Courses"],
-    "Cybersecurity": ["CompTIA Security+", "Certified Ethical Hacker", "TryHackMe Labs", "Cybrary Courses"],
-    "Project Management": ["PMP Certification", "Agile & Scrum Courses", "Coursera PM Specialization", "LinkedIn Learning PM"],
-}
 
-
-career_courses = {
-    "Software Engineer": [("CS50 (Harvard)", "https://cs50.harvard.edu"),
-                          ("The Odin Project", "https://www.theodinproject.com"),
-                          ("Udemy Python Bootcamp", "https://www.udemy.com/course/complete-python-bootcamp/")],
-    "Data Scientist": [("IBM Data Science", "https://www.coursera.org/professional-certificates/ibm-data-science"),
-                       ("Kaggle Micro-courses", "https://www.kaggle.com/learn"),
-                       ("Applied ML Specialization", "https://www.coursera.org/specializations/applied-machine-learning")],
-    "AI/ML Engineer": [("DeepLearning.ai", "https://www.deeplearning.ai"),
-                       ("fast.ai", "https://course.fast.ai"),
-                       ("TensorFlow Developer Certificate", "https://www.tensorflow.org/certificate")],
-    "UX/UI Designer": [("Interaction Design Foundation", "https://www.interaction-design.org"),
-                       ("Coursera UX Design", "https://www.coursera.org/specializations/ux-design"),
-                       ("Figma Tutorials", "https://help.figma.com")],
     "Digital Marketer": [("Google Digital Marketing", "https://learndigital.withgoogle.com"),
-                         ("Hubspot Academy", "https://academy.hubspot.com")],
-     "Web Development": ["freeCodeCamp", "The Odin Project", "React/Node Bootcamp", "Full Stack Open"],
-    "Mobile Development": ["Flutter Bootcamp", "iOS/Swift Bootcamp", "React Native course", "Android Kotlin Bootcamp"],
-    "UI/UX Design": ["Interaction Design Foundation", "Coursera UX Design", "Figma tutorials", "DesignLab courses"],
-    "Digital Marketing": ["Google Digital Marketing Course", "Hubspot Academy", "Facebook Ads Blueprint", "SEO Training"],
-    "Finance": ["Coursera Finance Specializations", "CFA Prep", "Wall Street Prep", "Financial Modeling Courses"],
-    "Cybersecurity": ["CompTIA Security+", "Certified Ethical Hacker", "TryHackMe Labs", "Cybrary Courses"],
-    "Project Management": ["PMP Certification", "Agile & Scrum Courses", "Coursera PM Specialization", "LinkedIn Learning PM"],
+                         ("Hubspot Academy", "https://academy.hubspot.com"),
+                         ("Coursera Social Media Marketing", "https://www.coursera.org/specializations/social-media-marketing")],
+
+    "Graphic Designer": [("Adobe Illustrator CC", "https://helpx.adobe.com/illustrator/tutorials.html"),
+                         ("Canva Design School", "https://www.canva.com/learn/design-school/"),
+                         ("Udemy Graphic Design Masterclass", "https://www.udemy.com/course/graphic-design-masterclass/")],
+
+    "Mechanical Engineer": [("MIT OpenCourseWare: Mechanical Engineering", "https://ocw.mit.edu/courses/mechanical-engineering/"),
+                            ("Coursera Mechanical Design", "https://www.coursera.org/learn/mechanical-design"),
+                            ("SolidWorks Tutorials", "https://www.solidworks.com/learning")],
+
+    "Teacher": [("Coursera: Teaching and Learning", "https://www.coursera.org/specializations/teaching-learning"),
+                ("EdX: Foundations of Teaching", "https://www.edx.org/course/foundations-of-teaching"),
+                ("Khan Academy Teacher Resources", "https://www.khanacademy.org/teachers")],
+
+    "Air Hostess": [("IATA Cabin Crew Training", "https://www.iata.org/en/training/courses/airline/"),
+                    ("Flight Attendant Training Institute", "https://www.fattraining.com/"),
+                    ("Coursera Customer Service Skills", "https://www.coursera.org/learn/customer-service")],
+
+    "Tour Guide": [("Tourism and Travel Courses - Alison", "https://alison.com/course/diploma-in-tourism"),
+                   ("Coursera Cultural Tourism", "https://www.coursera.org/learn/cultural-tourism"),
+                   ("National Tour Association Training", "https://www.ntaonline.com/education")],
+
+    "Hydrologist": [("Coursera Water Resources", "https://www.coursera.org/learn/water-resources-management"),
+                    ("EdX Hydrology", "https://www.edx.org/course/fundamentals-of-hydrology"),
+                    ("USGS Hydrologic Resources", "https://www.usgs.gov/mission-areas/water-resources")],
+
+    "Ambulance Driver": [("EMT Basic Training", "https://www.ems1academy.com/emt-basic-course/"),
+                         ("First Aid & CPR - Red Cross", "https://www.redcross.org/take-a-class/first-aid"),
+                         ("Defensive Driving for Emergency Vehicles", "https://www.nfpa.org/")],
+
+    "Forensic Scientist": [("Forensic Science - Coursera", "https://www.coursera.org/specializations/forensic-science"),
+                           ("Udemy Forensic Investigation", "https://www.udemy.com/course/forensic-investigation/"),
+                           ("OpenLearn Forensics", "https://www.open.edu/openlearn/science-maths-technology/forensic-science")],
+
+    "Pediatrician": [("Medscape Pediatrics Courses", "https://www.medscape.com/pediatrics"),
+                     ("Coursera Child Health", "https://www.coursera.org/learn/child-health"),
+                     ("Stanford Pediatrics Lectures", "https://med.stanford.edu/pediatrics.html")],
+
+    "Entrepreneur": [("Y Combinator Startup School", "https://www.startupschool.org/"),
+                     ("Coursera Entrepreneurship Specialization", "https://www.coursera.org/specializations/wharton-entrepreneurship"),
+                     ("MIT OpenCourseWare: Entrepreneurship", "https://ocw.mit.edu/courses/sloan-school-of-management/15-390-new-enterprises-fall-2013/")],
+
+    "Robotics Engineer": [("Coursera Robotics Specialization", "https://www.coursera.org/specializations/robotics"),
+                          ("Udemy Robotics for Beginners", "https://www.udemy.com/course/robotics/"),
+                          ("MIT OpenCourseWare Robotics", "https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-141-robotic-science-and-systems-i-fall-2014/")],
+
+    "Advertising Executive": [("Hubspot Marketing Courses", "https://academy.hubspot.com/"),
+                              ("Coursera Advertising Strategy", "https://www.coursera.org/learn/advertising-strategy"),
+                              ("Google Ads Certification", "https://skillshop.exceedlms.com/student/path/18109")],
+
+    "Firefighter": [("NFPA Firefighter Training", "https://www.nfpa.org/"),
+                    ("Coursera Fire Safety", "https://www.coursera.org/learn/fire-safety"),
+                    ("Red Cross Fire Safety", "https://www.redcross.org/take-a-class/fire-safety")],
+
+    "Nurse": [("Coursera Nursing Courses", "https://www.coursera.org/browse/health/nursing"),
+              ("MedlinePlus Nursing Resources", "https://medlineplus.gov/nursing.html"),
+              ("American Nurses Association", "https://www.nursingworld.org/")],
+
+    "Biotechnologist": [("Coursera Biotechnology Specialization", "https://www.coursera.org/specializations/biotechnology"),
+                         ("MIT OpenCourseWare Biotechnology", "https://ocw.mit.edu/courses/biological-engineering/"),
+                         ("Udemy Biotechnology", "https://www.udemy.com/course/biotechnology/")],
+
+    "Microbiologist": [("Coursera Microbiology", "https://www.coursera.org/learn/microbiology"),
+                       ("EdX Microbiology", "https://www.edx.org/learn/microbiology"),
+                       ("OpenLearn Microbiology", "https://www.open.edu/openlearn/science-maths-technology/microbiology")],
+
+    "Doctor": [("Medscape Clinical Courses", "https://www.medscape.com/"),
+               ("Coursera Clinical Medicine", "https://www.coursera.org/learn/clinical-medicine"),
+               ("Stanford Medicine Online", "https://med.stanford.edu/")],
+
+    "Farmer": [("Alison Agriculture Courses", "https://alison.com/course/diploma-in-agriculture"),
+               ("Coursera Sustainable Agriculture", "https://www.coursera.org/learn/sustainable-agriculture"),
+               ("FAO eLearning", "https://elearning.fao.org/")],
+
+    "B.Pharm Graduate": [("Coursera Pharmacology", "https://www.coursera.org/learn/pharmacology"),
+                         ("Alison Pharmacy Courses", "https://alison.com/courses/pharmacy"),
+                         ("MedlinePlus Drug Information", "https://medlineplus.gov/druginformation.html")],
+
+    "Pharm.D Graduate": [("Coursera Clinical Pharmacy", "https://www.coursera.org/learn/clinical-pharmacy"),
+                         ("EdX Pharmacy Courses", "https://www.edx.org/learn/pharmacy"),
+                         ("Udemy Pharmacy Technician Training", "https://www.udemy.com/course/pharmacy-technician-training/")],
+
+    "Historian": [("Coursera History Courses", "https://www.coursera.org/browse/arts-and-humanities/history"),
+                  ("EdX History Programs", "https://www.edx.org/learn/history"),
+                  ("Khan Academy History", "https://www.khanacademy.org/humanities/world-history")],
+
+    "Librarian": [("Coursera Library Science", "https://www.coursera.org/learn/library-science"),
+                  ("EdX Library Management", "https://www.edx.org/learn/library-management"),
+                  ("American Library Association", "https://www.ala.org/educationcareers")],
+
+    "Medical Coder": [("AAPC Medical Coding", "https://www.aapc.com/training/medical-coding/"),
+                      ("Coursera Health Informatics", "https://www.coursera.org/learn/health-informatics"),
+                      ("Udemy ICD-10 Coding", "https://www.udemy.com/course/icd-10-coding/")],
+
+    "Business": [("Coursera Business Foundations", "https://www.coursera.org/specializations/wharton-business-foundations"),
+                 ("MIT OpenCourseWare Business", "https://ocw.mit.edu/courses/sloan-school-of-management/"),
+                 ("Harvard Online Business Courses", "https://online.hbs.edu/courses/")],
+
+    "Food Critic": [("Udemy Food Writing", "https://www.udemy.com/course/food-writing/"),
+                    ("Coursera Culinary Arts", "https://www.coursera.org/learn/culinary-arts"),
+                    ("EdX Gastronomy Courses", "https://www.edx.org/learn/gastronomy")],
+
+    "Animal Controller": [("Animal Behavior Courses - Coursera", "https://www.coursera.org/learn/animal-behavior"),
+                          ("Udemy Animal Handling", "https://www.udemy.com/course/animal-handling/"),
+                          ("ASPCA Training Resources", "https://www.aspca.org/")],
+
+    "Veterinary Doctor": [("Coursera Veterinary Science", "https://www.coursera.org/specializations/veterinary-science"),
+                          ("VetMed Online", "https://www.vetmedonline.com/"),
+                          ("EdX Veterinary Courses", "https://www.edx.org/learn/veterinary")],
+
+    "Singer": [("Berklee Online Vocal Courses", "https://online.berklee.edu/courses/vocals"),
+               ("Coursera Music Performance", "https://www.coursera.org/learn/music-performance"),
+               ("Udemy Singing Lessons", "https://www.udemy.com/course/singing-lessons/")],
+
+    "Dancer": [("Udemy Dance Courses", "https://www.udemy.com/courses/dance/"),
+               ("Coursera Dance & Movement", "https://www.coursera.org/learn/dance-movement"),
+               ("DancePlug Tutorials", "https://www.danceplug.com/")],
+
+    "Actor/Actress": [("MasterClass Acting with Natalie Portman", "https://www.masterclass.com/classes/natalie-portman-teaches-acting"),
+                      ("Udemy Acting Classes", "https://www.udemy.com/course/acting-classes/"),
+                      ("Coursera Performing Arts", "https://www.coursera.org/learn/performing-arts")],
+
+    "Athlete": [("Coursera Sports Science", "https://www.coursera.org/learn/sports-science"),
+                ("Udemy Fitness Training", "https://www.udemy.com/course/fitness-training/"),
+                ("NASM Certified Personal Trainer", "https://www.nasm.org/certification")],
+
+    "Coach": [("Coursera Coaching Skills", "https://www.coursera.org/learn/coaching-skills"),
+              ("Udemy Sports Coaching", "https://www.udemy.com/course/sports-coaching/"),
+              ("International Coaching Federation", "https://coachingfederation.org/")],
+
+    "Writer": [("Coursera Creative Writing", "https://www.coursera.org/specializations/creative-writing"),
+               ("Udemy Writing Courses", "https://www.udemy.com/courses/writing/"),
+               ("OpenLearn Writing Skills", "https://www.open.edu/openlearn/skills-for-work")],
+
+    "Content Writer": [("Hubspot Content Marketing", "https://academy.hubspot.com/courses/content-marketing"),
+                       ("Coursera Content Writing", "https://www.coursera.org/learn/content-marketing"),
+                       ("Udemy SEO Content Writing", "https://www.udemy.com/course/seo-content-writing/")],
+
+    "Model": [("MasterClass Modeling with Naomi Campbell", "https://www.masterclass.com/classes/naomi-campbell-teaches-modeling"),
+              ("Udemy Modeling Courses", "https://www.udemy.com/course/modeling/"),
+              ("Modeling Workshop Tutorials", "https://www.modelingworkshop.com/")],
+
+    "Food Inspector": [("Coursera Food Safety", "https://www.coursera.org/learn/food-safety"),
+                       ("Alison Food Hygiene", "https://alison.com/course/diploma-in-food-hygiene"),
+                       ("FDA Training Resources", "https://www.fda.gov/training")],
+
+    "Chemical Engineer": [("MIT OpenCourseWare Chemical Engineering", "https://ocw.mit.edu/courses/chemical-engineering/"),
+                          ("Coursera Chemical Process", "https://www.coursera.org/learn/chemical-process"),
+                          ("Udemy Chemical Engineering", "https://www.udemy.com/course/chemical-engineering/")],
+
+    "Lab Technician": [("Coursera Lab Techniques", "https://www.coursera.org/learn/lab-techniques"),
+                       ("Udemy Lab Safety & Skills", "https://www.udemy.com/course/lab-safety/"),
+                       ("EdX Laboratory Courses", "https://www.edx.org/learn/laboratory")],
+
+    "Florist": [("Udemy Flower Arranging", "https://www.udemy.com/course/flower-arranging/"),
+                ("Skillshare Floristry", "https://www.skillshare.com/browse/floristry"),
+                ("Alison Floral Design", "https://alison.com/course/floral-design")],
+
+    "Makeup Artist": [("Udemy Makeup Artistry", "https://www.udemy.com/course/makeup-artistry/"),
+                      ("Skillshare Makeup Tutorials", "https://www.skillshare.com/browse/makeup"),
+                      ("MasterClass Makeup with Bobbi Brown", "https://www.masterclass.com/classes/bobbi-brown-teaches-makeup")],
+
+    "Content Creator": [("YouTube Creator Academy", "https://creatoracademy.youtube.com/"),
+                        ("Skillshare Content Creation", "https://www.skillshare.com/browse/content-creation"),
+                        ("Udemy Video Content Creation", "https://www.udemy.com/course/video-content-creation/")],
+
+    "Marketing Manager": [("Coursera Marketing Management", "https://www.coursera.org/learn/marketing-management"),
+                          ("Hubspot Marketing Courses", "https://academy.hubspot.com/courses/marketing"),
+                          ("Google Digital Marketing", "https://learndigital.withgoogle.com/digitalgarage")],
+
+    "Project Manager": [("Coursera Project Management", "https://www.coursera.org/specializations/project-management"),
+                        ("Udemy PMP Certification", "https://www.udemy.com/course/pmp-exam-prep/"),
+                        ("PMI Resources", "https://www.pmi.org/")],
+
+    "HR Professional": [("Coursera Human Resources", "https://www.coursera.org/learn/human-resources"),
+                        ("Udemy HR Management", "https://www.udemy.com/course/hr-management/"),
+                        ("SHRM HR Resources", "https://www.shrm.org/")],
+
+    "CEO": [("Harvard Business School Online Leadership", "https://online.hbs.edu/courses/leadership-principles/"),
+            ("Coursera Executive Leadership", "https://www.coursera.org/specializations/executive-leadership"),
+            ("MIT Sloan Leadership Programs", "https://executive.mit.edu/leadership/")],
+
+    "Weather Forecaster": [("Coursera Meteorology", "https://www.coursera.org/learn/meteorology"),
+                           ("EdX Weather and Climate", "https://www.edx.org/learn/weather"),
+                           ("NOAA Meteorology Training", "https://www.noaa.gov/")],
+
+    "News Reader": [("Coursera Journalism Courses", "https://www.coursera.org/browse/arts-and-humanities/journalism"),
+                    ("Udemy News Reporting", "https://www.udemy.com/course/news-reporting/"),
+                    ("BBC Academy Journalism", "https://www.bbc.co.uk/academy")],
+
+    "Architect": [("MIT OpenCourseWare Architecture", "https://ocw.mit.edu/courses/architecture/"),
+                  ("Coursera Architecture Design", "https://www.coursera.org/specializations/architecture-design"),
+                  ("EdX Architectural Design", "https://www.edx.org/learn/architecture")],
+
+    "Archaeologist": [("Coursera Archaeology", "https://www.coursera.org/learn/archaeology"),
+                      ("Udemy Archaeology Courses", "https://www.udemy.com/course/archaeology/"),
+                      ("OpenLearn Archaeology", "https://www.open.edu/openlearn/history/archaeology")],
+
+    "Psychologist": [("Coursera Psychology", "https://www.coursera.org/specializations/psychology"),
+                     ("Udemy Psychology Courses", "https://www.udemy.com/course/psychology/"),
+                     ("EdX Psychology", "https://www.edx.org/learn/psychology")],
+
+    "Psychiatrist": [("Coursera Psychiatry", "https://www.coursera.org/learn/psychiatry"),
+                     ("Udemy Mental Health Courses", "https://www.udemy.com/course/mental-health/"),
+                     ("Medscape Psychiatry", "https://www.medscape.com/psychiatry")],
+
+    "Dentist": [("Coursera Dentistry", "https://www.coursera.org/learn/dentistry"),
+                ("Udemy Dental Courses", "https://www.udemy.com/course/dentistry/"),
+                ("Colgate Oral Health Resources", "https://www.colgate.com/en-us/oral-health")],
+
+    "Electrician": [("Udemy Electrical Courses", "https://www.udemy.com/course/electrical/"),
+                    ("Coursera Electrical Engineering", "https://www.coursera.org/specializations/electrical-engineering"),
+                    ("Alison Electrical Training", "https://alison.com/course/electrician-training")],
+
+    "Biologist": [("Coursera Biology", "https://www.coursera.org/browse/life-sciences/biology"),
+                  ("EdX Biology Courses", "https://www.edx.org/learn/biology"),
+                  ("Khan Academy Biology", "https://www.khanacademy.org/science/biology")],
+
+    "Animator": [("Udemy Animation Courses", "https://www.udemy.com/course/animation/"),
+                 ("Coursera Character Animation", "https://www.coursera.org/learn/character-animation"),
+                 ("AnimSchool Tutorials", "https://www.animschool.com/")],
+
+    "Astronomer": [("Coursera Astronomy", "https://www.coursera.org/learn/astronomy"),
+                   ("EdX Astrophysics", "https://www.edx.org/learn/astrophysics"),
+                   ("NASA Online Learning", "https://www.nasa.gov/education")],
+
+    "Geologist": [("Coursera Geology", "https://www.coursera.org/learn/geology"),
+                  ("EdX Earth Sciences", "https://www.edx.org/learn/earth-sciences"),
+                  ("USGS Geological Training", "https://www.usgs.gov/education")],
+
+    "Mentalist": [("Udemy Mentalism", "https://www.udemy.com/course/mentalism/"),
+                  ("Skillshare Mentalism Classes", "https://www.skillshare.com/browse/mentalism"),
+                  ("MasterClass Mind Tricks", "https://www.masterclass.com/")]
 }
 
 key_map = {k.strip().lower(): k for k in career_info.keys()}

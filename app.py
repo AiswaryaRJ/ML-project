@@ -349,7 +349,7 @@ career_info = {
 }
 
 
-ccareer_resources = {
+career_courses = {
     "Software Engineer": [("CS50 (Harvard)", "https://cs50.harvard.edu"),
                           ("The Odin Project", "https://www.theodinproject.com"),
                           ("Udemy Python Bootcamp", "https://www.udemy.com/course/complete-python-bootcamp/")],

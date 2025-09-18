@@ -1,5 +1,4 @@
 # --------------------- Full Optimized app.py ---------------------
-import streamlit as st
 import pandas as pd
 import numpy as np
 import difflib
@@ -14,6 +13,33 @@ from functools import lru_cache
 from chatbot import get_response
 from recommender import recommend
 from predict_career import predict_career
+
+import streamlit as st
+
+# ---- Initialize chat history ----
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+st.title("Career Guidance Chatbot")
+
+# ---- Clear chat button ----
+if st.button("🗑️ Clear Chat"):
+    st.session_state.chat_history = []  # Clears stored history
+
+# ---- Input box for user question ----
+user_input = st.text_input("Ask me anything about careers:")
+
+# ---- Process input ----
+if user_input:
+    # Replace this with your prediction or model output
+    response = f"Bot response for: {user_input}"
+    st.session_state.chat_history.append((user_input, response))
+
+# ---- Display last 5 messages only ----
+for user, bot in st.session_state.chat_history[-5:]:
+    st.write(f"**You:** {user}")
+    st.write(f"**Bot:** {bot}")
+
 
 # ---------------- Streamlit Page Settings ----------------
 st.set_page_config(page_title="Career Guidance AI", layout="centered")
@@ -957,5 +983,8 @@ if user_input:
     st.session_state.chat_history.append({"user": user_input, "bot": bot_resp})
 
 for chat in st.session_state.chat_history:
-    st.markdown(f"**You:** {chat['user']}")
-    st.markdown(f"**Bot:** {chat['bot']}")
+    # ---- Optional: Show older messages in a collapsible section ----
+    with st.expander("Show Previous Messages"):
+        for user, bot in st.session_state.chat_history[:-5]:  # Older ones
+            st.write(f"**You:** {user}")
+            st.write(f"**Bot:** {bot}")

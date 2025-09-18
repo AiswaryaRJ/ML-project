@@ -635,6 +635,70 @@ sample_examples = [
     "I like helping people with health",
     "I want to run my own business",
     "I enjoy writing articles and stories",
+    "I enjoy building software and solving coding challenges",
+    "I enjoy building software and solving coding challenges",
+    "I am passionate about analyzing data to find insights",
+    "I love designing and training intelligent models",
+    "I enjoy creating intuitive interfaces and user experiences",
+    "I like promoting brands and running marketing campaigns",
+    "I love creating graphics and visual art",
+    "I enjoy designing machines and mechanical systems",
+    "I enjoy teaching and mentoring students",
+    "I like helping passengers feel safe and comfortable",
+    "I enjoy showing people new places and sharing stories",
+    "I am passionate about studying water and environmental systems",
+    "I like helping people in emergency medical situations",
+    "I enjoy solving crimes using scientific methods",
+    "I love caring for children and monitoring their health",
+    "I want to run my own business and create solutions",
+    "I enjoy designing and building automated machines",
+    "I like creating campaigns that attract attention",
+    "I enjoy saving lives and protecting people from fires",
+    "I like helping patients recover and stay healthy",
+    "I enjoy developing innovative biotech solutions",
+    "I love studying microorganisms and their effects",
+    "I enjoy diagnosing and treating illnesses",
+    "I like growing crops and caring for livestock",
+    "I enjoy learning about drugs and their effects",
+    "I like helping patients with complex medications",
+    "I enjoy studying the past and analyzing historical events",
+    "I like organizing knowledge and helping people find information",
+    "I enjoy translating medical records into codes",
+    "I like analyzing markets and managing organizations",
+    "I enjoy tasting and reviewing culinary creations",
+    "I like managing and caring for animals safely",
+    "I enjoy treating animals and ensuring their health",
+    "I love singing and performing music",
+    "I enjoy expressing myself through dance",
+    "I love performing and portraying characters",
+    "I enjoy training and competing in sports",
+    "I like guiding athletes to improve their skills",
+    "I enjoy writing articles, stories, and essays",
+    "I like creating content that engages readers",
+    "I enjoy modeling and presenting fashion creatively",
+    "I like ensuring food safety and hygiene",
+    "I enjoy designing chemical processes and systems",
+    "I like performing experiments and analyzing samples",
+    "I enjoy arranging flowers and creating beautiful designs",
+    "I love enhancing appearances through makeup",
+    "I enjoy producing videos and creative content",
+    "I like planning strategies to promote products",
+    "I enjoy organizing projects and leading teams",
+    "I like helping employees grow and resolving workplace issues",
+    "I enjoy leading organizations and making strategic decisions",
+    "I enjoy predicting weather and studying climates",
+    "I like presenting news and informing the public",
+    "I enjoy designing buildings and functional spaces",
+    "I like exploring ancient civilizations and artifacts",
+    "I enjoy understanding human behavior and emotions",
+    "I like helping people with mental health challenges",
+    "I enjoy caring for teeth and oral health",
+    "I like working with electrical systems and circuits",
+    "I enjoy studying living organisms and ecosystems",
+    "I love bringing stories to life through animation",
+    "I enjoy exploring the universe and celestial bodies",
+    "I like studying rocks, minerals, and Earth's processes",
+    "I enjoy understanding and predicting human behavior"
     "I love cooking and creating recipes",
     "I like working with electronics and hardware",
     "I love photographing landscapes and people",
@@ -682,17 +746,18 @@ if st.button("Suggest careers"):
                 st.write("**Next Steps:**")
                 for step in info["next_steps"]:
                     st.write(f"- {step}")
-            courses = career_courses.get(career)
+            # Assume career comes from user selection in Streamlit
+            career = st.selectbox("Select a career:", list(career_courses.keys()) + ["Other"])
+
+            # Safely get courses for the selected career
+            courses = career_courses.get(career, [])
+
             if courses:
-                st.write("**Recommended Courses:**")
-                for c in courses:
-                    if isinstance(c, tuple):
-                        st.markdown(f"- [{c[0]}]({c[1]})")
-                    else:
-                        st.write(f"- {c}")
-            st.markdown("---")
-
-
+                st.write(f"Recommended courses for {career}:")
+                for course_name, course_link in courses:
+                    st.markdown(f"- [{course_name}]({course_link})")
+            else:
+                st.warning(f"No courses found for the career: {career}. Please select another career or check back later.")
 # ---------------- Bulk CSV Predictions ----------------
 st.subheader("Bulk CSV Predictions")
 uploaded_file = st.file_uploader("Upload CSV with 'description' column", type=["csv"])

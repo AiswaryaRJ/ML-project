@@ -214,34 +214,6 @@ sample_examples = [
     "I enjoy learning about aviation and piloting",
 ]
 
-# ---------------- MULTI CAREER SUGGESTIONS (REVISED) ----------------
-query = st.text_input("Enter your interests or skills:")
-k_single = st.slider("How many suggestions?", 1, 5, 3)
-
-if query:
-    # Use cosine similarity on TF-IDF to rank all careers and pick top k_single
-    query_vec = tfidf.transform([query])
-    sims = cosine_similarity(query_vec, career_matrix)[0]
-    top_idx = sims.argsort()[::-1][:k_single]
-    st.subheader("Top Career Suggestions")
-    for idx in top_idx:
-        career = career_names[idx]
-        info = career_info.get(career, {"description": "No description", "next_steps": []})
-        st.markdown(f"### {career}")
-        st.write(f"Description: {info.get('description')}")
-        if info.get("next_steps"):
-            st.write("**Next Steps:**")
-            for step in info["next_steps"]:
-                st.write(f"- {step}")
-        courses = career_courses.get(career)
-        if courses:
-            st.write("**Recommended Courses:**")
-            for c in courses:
-                if isinstance(c, tuple):
-                    st.markdown(f"- [{c[0]}]({c[1]})")
-                else:
-                    st.write(f"- {c}")
-        st.markdown("---")
 
 # ----- Multi-Interest Section -----
 st.subheader("Select multiple interests (up to 5)")

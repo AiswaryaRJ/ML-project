@@ -749,7 +749,9 @@ if st.button("Suggest careers"):
             career_list = list(career_courses.keys())
             career_list.append("Other")
 
-            career = st.selectbox("Select a career:", career_list)
+           # Use the predicted career directly
+            # career = st.selectbox("Select a career:", career_list)  # <-- commented out
+
             courses = career_courses.get(career, [])
 
             if courses:
@@ -761,6 +763,8 @@ if st.button("Suggest careers"):
                     f"No courses found for the career: '{career}'. "
                     "Please select another career or check back later."
                 )
+
+
 # ---------------- Bulk CSV Predictions ----------------
 st.subheader("Bulk CSV Predictions")
 uploaded_file = st.file_uploader("Upload CSV with 'description' column", type=["csv"])

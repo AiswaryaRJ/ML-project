@@ -746,18 +746,21 @@ if st.button("Suggest careers"):
                 st.write("**Next Steps:**")
                 for step in info["next_steps"]:
                     st.write(f"- {step}")
-            # Assume career comes from user selection in Streamlit
-            career = st.selectbox("Select a career:", list(career_courses.keys()) + ["Other"])
+            career_list = list(career_courses.keys())
+            career_list.append("Other")
 
-            # Safely get courses for the selected career
+            career = st.selectbox("Select a career:", career_list)
             courses = career_courses.get(career, [])
 
             if courses:
-                st.write(f"Recommended courses for {career}:")
+                st.subheader(f"Recommended courses for {career}:")
                 for course_name, course_link in courses:
                     st.markdown(f"- [{course_name}]({course_link})")
             else:
-                st.warning(f"No courses found for the career: {career}. Please select another career or check back later.")
+                st.warning(
+                    f"No courses found for the career: '{career}'. "
+                    "Please select another career or check back later."
+                )
 # ---------------- Bulk CSV Predictions ----------------
 st.subheader("Bulk CSV Predictions")
 uploaded_file = st.file_uploader("Upload CSV with 'description' column", type=["csv"])

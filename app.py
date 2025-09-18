@@ -342,6 +342,36 @@ career_info = {
         "description": "Studies the Earth, rocks, minerals, and natural resources.",
         "next_steps": ["Learn geology and field mapping", "Conduct sample analysis", "Participate in field studies"]
     },
+    "Director": {
+    "description": "Oversees the creative vision of a film or video project and directs actors and crew.",
+    "next_steps": ["Study film directing", "Watch and analyze movies", "Practice directing short films"]
+},
+
+    "Cameraman": {
+        "description": "Operates cameras to capture footage according to the director's vision.",
+        "next_steps": ["Learn camera operation and cinematography", "Practice filming scenes", "Study lighting and framing techniques"]
+    },
+
+    "Producer": {
+        "description": "Manages the production of films, including financing, scheduling, and coordination of the crew.",
+        "next_steps": ["Learn film production management", "Network with industry professionals", "Assist in film projects"]
+    },
+
+    "Production Controller": {
+        "description": "Oversees the logistics and schedule of a film production, ensuring smooth workflow and resource allocation.",
+        "next_steps": ["Study production management", "Practice project coordination", "Gain experience in film sets"]
+    },
+
+    "Cinematographer": {
+        "description": "Responsible for capturing the visual aesthetics of a film through camera work and lighting.",
+        "next_steps": ["Learn cinematography techniques", "Experiment with camera angles and lighting", "Study visual storytelling"]
+    },
+
+    "Visual Editor": {
+        "description": "Edits raw footage to create a polished final product, adding effects, transitions, and sound synchronization.",
+        "next_steps": ["Learn video editing software (Premiere, Final Cut)", "Practice editing short films", "Study post-production techniques"]
+    },
+
     "Mentalist": {
         "description": "Performs mental feats and illusions using psychology and observation.",
         "next_steps": ["Study human behavior and psychology", "Practice observation and memory techniques", "Develop performance skills"]
@@ -600,7 +630,31 @@ career_courses = {
 
     "Mentalist": [("Udemy Mentalism", "https://www.udemy.com/course/mentalism/"),
                   ("Skillshare Mentalism Classes", "https://www.skillshare.com/browse/mentalism"),
-                  ("MasterClass Mind Tricks", "https://www.masterclass.com/")]
+                  ("MasterClass Mind Tricks", "https://www.masterclass.com/")],
+    "Director": [("MasterClass Filmmaking by Martin Scorsese", "https://www.masterclass.com/classes/martin-scorsese-teaches-filmmaking"),
+                ("Coursera Filmmaking Specialization", "https://www.coursera.org/specializations/filmmaking"),
+                ("Udemy Film Directing", "https://www.udemy.com/course/film-directing/")],
+
+    "Cameraman": [("Udemy Cinematography & Camera Skills", "https://www.udemy.com/course/cinematography/"),
+                ("MasterClass Cinematography by Werner Herzog", "https://www.masterclass.com/classes/werner-herzog-teaches-filmmaking"),
+                ("Skillshare Cinematography Classes", "https://www.skillshare.com/browse/cinematography")],
+
+    "Producer": [("Coursera Film Production", "https://www.coursera.org/learn/film-production"),
+                ("Udemy Film Producing", "https://www.udemy.com/course/film-producing/"),
+                ("MasterClass Producing by Shonda Rhimes", "https://www.masterclass.com/classes/shonda-rhimes-teaches-writing-for-television")],
+
+    "Production Controller": [("Udemy Film Production Management", "https://www.udemy.com/course/film-production-management/"),
+                            ("Coursera Project Management for Film", "https://www.coursera.org/learn/project-management-film"),
+                            ("Skillshare Production Coordination", "https://www.skillshare.com/browse/production")],
+
+    "Cinematographer": [("MasterClass Cinematography by Roger Deakins", "https://www.masterclass.com/classes/roger-deakins-teaches-cinematography"),
+                        ("Udemy Cinematography Techniques", "https://www.udemy.com/course/cinematography-techniques/"),
+                        ("Coursera Advanced Cinematography", "https://www.coursera.org/learn/advanced-cinematography")],
+
+    "Visual Editor": [("Udemy Video Editing with Premiere Pro", "https://www.udemy.com/course/adobe-premiere-pro-video-editing/"),
+                    ("Coursera Video Editing & Post Production", "https://www.coursera.org/learn/video-editing"),
+                    ("Skillshare Final Cut Pro Editing", "https://www.skillshare.com/browse/final-cut-pro")],
+
 }
 
 key_map = {k.strip().lower(): k for k in career_info.keys()}
@@ -688,6 +742,12 @@ sample_examples = [
     "I enjoy leading organizations and making strategic decisions",
     "I enjoy predicting weather and studying climates",
     "I like presenting news and informing the public",
+    "I love directing movies and guiding creative vision",
+    "I enjoy capturing scenes and framing shots with my camera",
+    "I like producing films and managing production logistics",
+    "I enjoy coordinating schedules and resources as a production controller",
+    "I love planning and executing cinematography for visual storytelling",
+    "I enjoy editing visuals and creating compelling video sequences"
     "I enjoy designing buildings and functional spaces",
     "I like exploring ancient civilizations and artifacts",
     "I enjoy understanding human behavior and emotions",

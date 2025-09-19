@@ -1068,6 +1068,7 @@ if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.session_state.last_answer = None
     st.session_state.last_question = None
-    st.experimental_rerun()
+    st.rerun()  # ✅ Use st.rerun() instead of st.experimental_rerun()
+
 
 st.caption("💡 Tip: Ask about careers, skills, science, history, or any topic for detailed answers.")

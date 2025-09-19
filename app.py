@@ -13,7 +13,8 @@ from functools import lru_cache
 from chatbot import get_response
 from recommender import recommend
 from predict_career import predict_career
-
+import wikipedia
+from difflib import SequenceMatcher
 import streamlit as st
 
 
@@ -948,8 +949,6 @@ if uploaded_resume:
 
 #-----------Chatbot-----------------
 
-
-# --- Wikipedia Helper ---
 def get_wiki_summary(query):
     try:
         search_results = wikipedia.search(query)
@@ -958,21 +957,26 @@ def get_wiki_summary(query):
 
         page = wikipedia.page(search_results[0])
 
-        # Relevance check
-        if query.lower() not in page.title.lower() and query.lower() not in page.summary.lower():
+        # Similarity check between query and page title or summary
+        title_score = SequenceMatcher(None, query.lower(), page.title.lower()).ratio()
+        summary_score = SequenceMatcher(None, query.lower(), page.summary.lower()).ratio()
+
+        if max(title_score, summary_score) < 0.2:
             return (
                 "⚠️ The result might be unrelated. "
                 "Please refine your question with more context or keywords."
             )
 
         return page.summary[:1000]  # Trim for readability
+
     except wikipedia.DisambiguationError as e:
         options = ", ".join(e.options[:5])
         return f"⚠️ Your query is ambiguous. Did you mean: {options}?"
     except wikipedia.PageError:
         return "❌ Wikipedia page not found. Please refine your query."
-    except Exception:
-        return "⚠️ An error occurred while fetching data. Please try again."
+    except Exception as ex:
+        return f"⚠️ An error occurred while fetching data: {ex}"
+
 
 # --- Chatbot UI ---
 st.header("🤖 Chatbot Assistant")

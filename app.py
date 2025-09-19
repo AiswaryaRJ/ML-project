@@ -949,62 +949,112 @@ if uploaded_resume:
 
 #-----------Chatbot-----------------
 
+
+# --- Wikipedia summary with improved filtering ---
 def get_wiki_summary(query):
     try:
         search_results = wikipedia.search(query)
         if not search_results:
-            return "❌ No relevant Wikipedia articles found. Try using more specific keywords."
+            return "❌ No relevant Wikipedia articles found. Try being more specific."
 
-        page = wikipedia.page(search_results[0])
+        best_page = None
+        best_score = 0
 
-        # Similarity check between query and page title or summary
-        title_score = SequenceMatcher(None, query.lower(), page.title.lower()).ratio()
-        summary_score = SequenceMatcher(None, query.lower(), page.summary.lower()).ratio()
+        for title in search_results[:7]:  # Check more results for relevance
+            try:
+                page = wikipedia.page(title)
+                score = SequenceMatcher(None, query.lower(), page.summary.lower()).ratio()
+                if score > best_score:
+                    best_score = score
+                    best_page = page
+            except:
+                continue
 
-        if max(title_score, summary_score) < 0.2:
+        if best_page and best_score > 0.35:  # Slightly stricter threshold
+            return best_page.summary[:1000] + "..."
+        else:
             return (
-                "⚠️ The result might be unrelated. "
-                "Please refine your question with more context or keywords."
+                "⚠️ Could not find a clear, reliable answer on Wikipedia.\n\n"
+                "💡 **Tips for better results:**\n"
+                "- Rephrase your question with more detail (e.g., 'skills needed for classical musicianship').\n"
+                "- Specify the field or context (e.g., 'AI in healthcare')."
             )
-
-        return page.summary[:1000]  # Trim for readability
-
     except wikipedia.DisambiguationError as e:
         options = ", ".join(e.options[:5])
         return f"⚠️ Your query is ambiguous. Did you mean: {options}?"
     except wikipedia.PageError:
         return "❌ Wikipedia page not found. Please refine your query."
     except Exception as ex:
-        return f"⚠️ An error occurred while fetching data: {ex}"
+        return f"⚠️ An unexpected error occurred: {ex}"
 
+# --- Small built-in knowledge base for common queries ---
+skills_fallback = {
+    "musician": [
+        "Mastery of a primary instrument or vocals",
+        "Understanding of music theory and composition",
+        "Collaboration and teamwork with other artists",
+        "Stage presence and confidence",
+        "Basic audio production and recording knowledge"
+    ],
+    "singer": [
+        "Vocal technique and breath control",
+        "Ear training and pitch accuracy",
+        "Stage performance skills and confidence",
+        "Song interpretation and storytelling",
+        "Music theory basics"
+    ],
+    "programmer": [
+        "Proficiency in at least one programming language",
+        "Problem-solving and debugging skills",
+        "Understanding of algorithms and data structures",
+        "Version control (e.g., Git)",
+        "Continuous learning and adaptability"
+    ],
+    "data scientist": [
+        "Strong statistics and probability knowledge",
+        "Python/R programming",
+        "Machine learning algorithms",
+        "Data visualization and storytelling",
+        "SQL and data wrangling"
+    ]
+}
+
+def get_answer(query):
+    # Check fallback skills
+    for key in skills_fallback:
+        if key in query.lower():
+            return "💡 **Key skills for {}:**\n- ".format(key.title()) + "\n- ".join(skills_fallback[key])
+    # Fallback to Wikipedia
+    return get_wiki_summary(query)
 
 # --- Chatbot UI ---
 st.header("🤖 Chatbot Assistant")
+
+# Initialize chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 # Input field
-user_query = st.text_input("Ask me about careers, skills, or courses:", "")
+user_query = st.text_input("Ask me about careers, skills, or courses:")
 
-# Process user query
+# Process query
 if user_query:
-    bot_response = get_wiki_summary(user_query)
+    bot_response = get_answer(user_query)
     st.session_state.chat_history.append((user_query, bot_response))
 
-# Display chat history at bottom
+# Divider and chat history
 st.markdown("---")
 st.subheader("💬 Chat History")
 if st.session_state.chat_history:
-    for idx, (q, a) in enumerate(st.session_state.chat_history, start=1):
+    for q, a in st.session_state.chat_history:
         st.write(f"**You:** {q}")
         st.write(f"**Bot:** {a}")
 else:
     st.write("_No chat history yet._")
 
-# Button to clear history
+# Clear history button
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.experimental_rerun()
 
-st.caption("💡 Tip: Use specific queries like 'AI in healthcare Wikipedia' for better results.")
-
+st.caption("💡 Tip: Use specific queries like 'AI in healthcare Wikipedia' or 'skills for data scientist' for better results.")

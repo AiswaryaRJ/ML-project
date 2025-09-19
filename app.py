@@ -16,30 +16,6 @@ from predict_career import predict_career
 
 import streamlit as st
 
-# ---- Initialize chat history ----
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-st.title("Career Guidance Chatbot")
-
-# ---- Clear chat button ----
-if st.button("🗑️ Clear Chat"):
-    st.session_state.chat_history = []  # Clears stored history
-
-# ---- Input box for user question ----
-user_input = st.text_input("Ask me anything about careers:")
-
-# ---- Process input ----
-if user_input:
-    # Replace this with your prediction or model output
-    response = f"Bot response for: {user_input}"
-    st.session_state.chat_history.append((user_input, response))
-
-# ---- Display last 5 messages only ----
-for user, bot in st.session_state.chat_history[-5:]:
-    st.write(f"**You:** {user}")
-    st.write(f"**Bot:** {bot}")
-
 
 # ---------------- Streamlit Page Settings ----------------
 st.set_page_config(page_title="Career Guidance AI", layout="centered")
@@ -841,7 +817,7 @@ if st.button("Suggest careers"):
             courses = career_courses.get(career, [])
 
             if courses:
-                st.subheader(f"Recommended courses for {career}:")
+                st.markdown(f"### Recommended courses for {career}:")
                 for course_name, course_link in courses:
                     st.markdown(f"- [{course_name}]({course_link})")
             else:
@@ -972,36 +948,59 @@ if uploaded_resume:
 
 #-----------Chatbot-----------------
 
-st.title("🤖 Chatbot Assistant")
-st.write("Ask me about careers, skills, or courses:")
 
-# ---- Initialize chat history ----
+# --- Wikipedia Helper ---
+def get_wiki_summary(query):
+    try:
+        search_results = wikipedia.search(query)
+        if not search_results:
+            return "❌ No relevant Wikipedia articles found. Try using more specific keywords."
+
+        page = wikipedia.page(search_results[0])
+
+        # Relevance check
+        if query.lower() not in page.title.lower() and query.lower() not in page.summary.lower():
+            return (
+                "⚠️ The result might be unrelated. "
+                "Please refine your question with more context or keywords."
+            )
+
+        return page.summary[:1000]  # Trim for readability
+    except wikipedia.DisambiguationError as e:
+        options = ", ".join(e.options[:5])
+        return f"⚠️ Your query is ambiguous. Did you mean: {options}?"
+    except wikipedia.PageError:
+        return "❌ Wikipedia page not found. Please refine your query."
+    except Exception:
+        return "⚠️ An error occurred while fetching data. Please try again."
+
+# --- Chatbot UI ---
+st.header("🤖 Chatbot Assistant")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# ---- Clear chat ----
-if st.button("🗑️ Clear Chat"):
-    st.session_state.chat_history = []
+# Input field
+user_query = st.text_input("Ask me about careers, skills, or courses:", "")
 
-# ---- User input ----
-user_input = st.text_input("Type your question here:")
+# Process user query
+if user_query:
+    bot_response = get_wiki_summary(user_query)
+    st.session_state.chat_history.append((user_query, bot_response))
 
-# ---- When user submits ----
-if user_input:
-    # Generate a dummy response (replace with your career model logic)
-    bot_response = f"I think you might enjoy exploring Librarian or Writer roles because you like books."
-    st.session_state.chat_history.append((user_input, bot_response))
-
-# ---- Show only the last 5 messages ----
+# Display chat history at bottom
+st.markdown("---")
+st.subheader("💬 Chat History")
 if st.session_state.chat_history:
-    st.subheader("Recent Conversation")
-    for user, bot in st.session_state.chat_history[-5:]:
-        st.markdown(f"**You:** {user}")
-        st.markdown(f"**Bot:** {bot}")
+    for idx, (q, a) in enumerate(st.session_state.chat_history, start=1):
+        st.write(f"**You:** {q}")
+        st.write(f"**Bot:** {a}")
+else:
+    st.write("_No chat history yet._")
 
-# ---- Older messages collapsible ----
-if len(st.session_state.chat_history) > 5:
-    with st.expander("Show Previous Messages"):
-        for user, bot in st.session_state.chat_history[:-5]:
-            st.markdown(f"**You:** {user}")
-            st.markdown(f"**Bot:** {bot}")
+# Button to clear history
+if st.button("🧹 Clear Chat History"):
+    st.session_state.chat_history.clear()
+    st.experimental_rerun()
+
+st.caption("💡 Tip: Use specific queries like 'AI in healthcare Wikipedia' for better results.")
+

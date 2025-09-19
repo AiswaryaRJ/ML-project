@@ -13,9 +13,10 @@ from functools import lru_cache
 from chatbot import get_response
 from recommender import recommend
 from predict_career import predict_career
-import wikipedia
-from difflib import SequenceMatcher
 import streamlit as st
+import wikipedia
+import requests
+from difflib import SequenceMatcher
 
 
 # ---------------- Streamlit Page Settings ----------------
@@ -950,111 +951,123 @@ if uploaded_resume:
 #-----------Chatbot-----------------
 
 
-# --- Wikipedia summary with improved filtering ---
+# ---------- Improved Answer Retrieval ----------
+def fetch_from_duckduckgo(query):
+    """Fallback search using DuckDuckGo Instant Answer API."""
+    try:
+        url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
+        r = requests.get(url, timeout=5).json()
+        if r.get("AbstractText"):
+            return r["AbstractText"]
+        if r.get("RelatedTopics"):
+            for topic in r["RelatedTopics"]:
+                if isinstance(topic, dict) and topic.get("Text"):
+                    return topic["Text"]
+    except Exception:
+        return None
+    return None
+
 def get_wiki_summary(query):
     try:
         search_results = wikipedia.search(query)
         if not search_results:
-            return "❌ No relevant Wikipedia articles found. Try being more specific."
-
-        best_page = None
-        best_score = 0
-
-        for title in search_results[:7]:  # Check more results for relevance
+            return None
+        best_page, best_score = None, 0
+        for title in search_results[:7]:
             try:
                 page = wikipedia.page(title)
                 score = SequenceMatcher(None, query.lower(), page.summary.lower()).ratio()
                 if score > best_score:
-                    best_score = score
-                    best_page = page
+                    best_score, best_page = score, page
             except:
                 continue
+        if best_page and best_score > 0.35:
+            text = best_page.summary.strip()
+            # Take first 4-5 sentences for context
+            sentences = text.split(". ")
+            return ". ".join(sentences[:5]) + "."
+    except:
+        return None
+    return None
 
-        if best_page and best_score > 0.35:  # Slightly stricter threshold
-            return best_page.summary[:1000] + "..."
-        else:
-            return (
-                "⚠️ Could not find a clear, reliable answer on Wikipedia.\n\n"
-                "💡 **Tips for better results:**\n"
-                "- Rephrase your question with more detail (e.g., 'skills needed for classical musicianship').\n"
-                "- Specify the field or context (e.g., 'AI in healthcare')."
-            )
-    except wikipedia.DisambiguationError as e:
-        options = ", ".join(e.options[:5])
-        return f"⚠️ Your query is ambiguous. Did you mean: {options}?"
-    except wikipedia.PageError:
-        return "❌ Wikipedia page not found. Please refine your query."
-    except Exception as ex:
-        return f"⚠️ An unexpected error occurred: {ex}"
-
-# --- Small built-in knowledge base for common queries ---
+# Small knowledge base for common skills
 skills_fallback = {
+    "dancer": [
+        "Strong sense of rhythm and musicality",
+        "Physical strength, flexibility, and stamina",
+        "Ability to memorize choreography quickly",
+        "Expressiveness and stage presence",
+        "Collaboration and discipline for rehearsals"
+    ],
     "musician": [
         "Mastery of a primary instrument or vocals",
         "Understanding of music theory and composition",
         "Collaboration and teamwork with other artists",
         "Stage presence and confidence",
         "Basic audio production and recording knowledge"
-    ],
-    "singer": [
-        "Vocal technique and breath control",
-        "Ear training and pitch accuracy",
-        "Stage performance skills and confidence",
-        "Song interpretation and storytelling",
-        "Music theory basics"
-    ],
-    "programmer": [
-        "Proficiency in at least one programming language",
-        "Problem-solving and debugging skills",
-        "Understanding of algorithms and data structures",
-        "Version control (e.g., Git)",
-        "Continuous learning and adaptability"
-    ],
-    "data scientist": [
-        "Strong statistics and probability knowledge",
-        "Python/R programming",
-        "Machine learning algorithms",
-        "Data visualization and storytelling",
-        "SQL and data wrangling"
     ]
 }
 
 def get_answer(query):
-    # Check fallback skills
-    for key in skills_fallback:
+    # Check curated skills first
+    for key, skills in skills_fallback.items():
         if key in query.lower():
-            return "💡 **Key skills for {}:**\n- ".format(key.title()) + "\n- ".join(skills_fallback[key])
-    # Fallback to Wikipedia
-    return get_wiki_summary(query)
+            return f"💡 **Key skills for {key.title()}:**\n- " + "\n- ".join(skills)
+    # Try Wikipedia
+    wiki = get_wiki_summary(query)
+    if wiki:
+        return wiki
+    # Fallback: DuckDuckGo
+    duck = fetch_from_duckduckgo(query)
+    if duck:
+        return duck
+    return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# --- Chatbot UI ---
+# ---------- UI ----------
 st.header("🤖 Chatbot Assistant")
 
-# Initialize chat history
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+    st.session_state.chat_history = []   # stores tuples: (question, answer)
+if "last_answer" not in st.session_state:
+    st.session_state.last_answer = None
+if "last_question" not in st.session_state:
+    st.session_state.last_question = None
 
-# Input field
-user_query = st.text_input("Ask me about careers, skills, or courses:")
+user_query = st.text_input("Ask me about careers, skills, or any topic:")
 
-# Process query
+# Handle new query
 if user_query:
-    bot_response = get_answer(user_query)
-    st.session_state.chat_history.append((user_query, bot_response))
+    # Move previous Q&A to history
+    if st.session_state.last_question and st.session_state.last_answer:
+        st.session_state.chat_history.insert(
+            0, (st.session_state.last_question, st.session_state.last_answer)
+        )
+    # Get new answer
+    answer = get_answer(user_query)
+    st.session_state.last_question = user_query
+    st.session_state.last_answer = answer
 
-# Divider and chat history
+# Show current answer under chatbot
+if st.session_state.last_answer:
+    st.markdown("### 🧠 Answer")
+    st.write(f"**You:** {st.session_state.last_question}")
+    st.write(f"**Bot:** {st.session_state.last_answer}")
+
+# Divider + Chat History
 st.markdown("---")
-st.subheader("💬 Chat History")
+st.subheader("💬 Previous Chats")
 if st.session_state.chat_history:
     for q, a in st.session_state.chat_history:
         st.write(f"**You:** {q}")
         st.write(f"**Bot:** {a}")
 else:
-    st.write("_No chat history yet._")
+    st.write("_No previous chats yet._")
 
-# Clear history button
+# Clear button
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
+    st.session_state.last_answer = None
+    st.session_state.last_question = None
     st.experimental_rerun()
 
-st.caption("💡 Tip: Use specific queries like 'AI in healthcare Wikipedia' or 'skills for data scientist' for better results.")
+st.caption("💡 Tip: Ask about careers, skills, science, history, or any topic for detailed answers.")

@@ -997,7 +997,9 @@ if uploaded_resume:
         report_lines
 
 #-----------Chatbot-----------------
-
+# ----------------- Session State -----------------
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
 # Small curated skills fallback
 skills_fallback = {
@@ -1612,17 +1614,37 @@ skills_fallback = {
         "Understanding of music theory and composition",
         "Collaboration and teamwork with other artists",
         "Stage presence and confidence"
-    ]
+    ],
+    # IT & Technical
+    "software engineer": ["Proficiency in Python, Java, or C++", "Knowledge of data structures & algorithms", "Software development lifecycle experience", "Problem-solving & debugging", "Collaboration with Git"],
+    "data scientist": ["Statistics & probability knowledge", "Python/R and ML libraries", "Data visualization (Matplotlib, Tableau)", "Feature engineering & data cleaning", "Communicate insights effectively"],
+    "ai/ml engineer": ["ML/DL frameworks (TensorFlow, PyTorch)", "Neural networks knowledge", "Data preprocessing & feature selection", "Hyperparameter tuning & evaluation", "Deploying scalable models"],
+    # Healthcare
+    "doctor": ["Medical knowledge & diagnostics", "Patient care & empathy", "Critical thinking & problem-solving", "Time management under pressure", "Collaboration with healthcare teams"],
+    "nurse": ["Patient monitoring & care", "Medication administration", "Communication with patients & doctors", "Emergency response", "Compassion & empathy"],
+    # Creative & Arts
+    "dance fitness instructor": ["Rhythm", "Motivation", "Creativity", "Communication"],
+    "musician": ["Instrument/vocal mastery", "Music theory & composition", "Collaboration with artists", "Stage presence", "Basic audio production"],
+    # Trending skills
+    "trending skills 2026": ["AI & ML proficiency", "Data analytics", "Cloud computing", "Cybersecurity", "Emotional intelligence", "Creativity & innovation", "Critical thinking", "Communication", "Collaboration", "Adaptability"]
 
 }
 
 
-# ---------- Helper Functions ----------
+# Combine all careers & skills for fuzzy matching
+all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()},
+                      **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}}
+
+# ----------------- Helper Functions -----------------
 def normalize_text(text):
-    text = text.lower().strip()
-    words = text.split()
-    words = [lemmatizer.lemmatize(w) for w in words]  # lemmatize each word
-    return " ".join(words)
+    return text.lower().strip()
+
+def fuzzy_match_skill(query, threshold=70):
+    query_norm = normalize_text(query)
+    match, score = process.extractOne(query_norm, all_careers_skills.keys())
+    if score >= threshold:
+        return match, all_careers_skills[match]
+    return None, None
 
 def fetch_from_duckduckgo(query):
     try:
@@ -1660,44 +1682,44 @@ def get_wiki_summary(query):
         return None
     return None
 
-# ---------- Combine skills dictionaries ----------
-# career_info should already exist with next_steps for careers
-all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()},
-                      **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}}
-
-def fuzzy_match_skill(query, threshold=70):
-    query_norm = normalize_text(query)
-    match, score = process.extractOne(query_norm, all_careers_skills.keys())
-    if score >= threshold:
-        return match, all_careers_skills[match]
-    return None, None
-
-# ---------- ML Career Prediction ----------
+# ----------------- ML Career Prediction -----------------
 def predict_top3_careers(query):
-    query_vec = vectorizer.transform([query])  # or embedding_model.encode([query])
+    # Assuming vectorizer and model are already loaded
+    query_vec = vectorizer.transform([query])
     probs = model.predict_proba(query_vec)[0]
     classes = model.classes_
     top_idx = np.argsort(probs)[::-1][:3]
     top3 = [(classes[i], probs[i]) for i in top_idx]
     return top3
 
-# ---------- Main Answer Function ----------
+# ----------------- Main Answer Function -----------------
 def get_answer(query):
-    # 1️⃣ Check if user asks about careers explicitly
-    career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
-    if any(k in query.lower() for k in career_keywords):
-        top3 = predict_top3_careers(query)
-        # ... return top 3 suggestions ...
+    query_lower = query.lower()
 
-    # 2️⃣ Check curated skills fallback first
-    for key, skills in skills_fallback.items():
-        if key.lower() in query.lower():
-            return f"💡 **Key skills for {key.title()}:**\n- " + "\n- ".join(skills)
-
-    # 3️⃣ Fuzzy match skills / careers
+    # 1️⃣ Check fuzzy match for skills/careers
     match, skills = fuzzy_match_skill(query)
     if match:
         return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
+
+    # 2️⃣ Trending skills query
+    trending_keywords = ["best skills", "top skills", "skills required", "future jobs", "high demand jobs"]
+    if any(k in query_lower for k in trending_keywords):
+        trending = skills_fallback.get("trending skills 2026", [])
+        return "💡 **Trending / essential skills for upcoming jobs:**\n- " + "\n- ".join(trending)
+
+    # 3️⃣ Career suggestion using ML
+    career_keywords = ["career", "job", "profession", "suit me", "suggest"]
+    if any(k in query_lower for k in career_keywords):
+        top3 = predict_top3_careers(query)
+        result = "💼 **Top 3 career suggestions based on your input:**\n"
+        for career, prob in top3:
+            info = all_careers_skills.get(career.lower(), [])
+            result += f"- {career} (confidence: {prob*100:.1f}%)\n"
+            if info:
+                result += "  **Skills / Next Steps:**\n"
+                for s in info:
+                    result += f"    - {s}\n"
+        return result
 
     # 4️⃣ Wikipedia fallback
     wiki = get_wiki_summary(query)
@@ -1709,23 +1731,20 @@ def get_answer(query):
     if duck:
         return duck
 
-    # 6️⃣ Default response
+    # 6️⃣ Optional GPT-based fallback
+    # response = get_gpt_response(query)
+    # return response
+
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# ---------- Streamlit UI ----------
+# ----------------- Streamlit UI -----------------
 st.header("🤖 Chatbot Assistant")
-
-# Initialize session state
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
 user_query = st.text_input("Ask me about careers, skills, or any topic:")
 
 if user_query:
     answer = get_answer(user_query)
     st.session_state.chat_history.insert(0, (user_query, answer))
-    if len(st.session_state.chat_history) > 10:
-        st.session_state.chat_history = st.session_state.chat_history[:10]
+    st.session_state.chat_history = st.session_state.chat_history[:10]
 
 # Latest answer
 if st.session_state.chat_history:
@@ -1744,7 +1763,7 @@ if len(st.session_state.chat_history) > 1:
 else:
     st.write("_No previous chats yet._")
 
-# Clear chat button
+# Clear chat
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.experimental_rerun()

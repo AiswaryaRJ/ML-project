@@ -1632,25 +1632,25 @@ skills_fallback = {
 
 }
 
-# ----------------- Interest to Career Mapping -----------------
-interest_career_map = {
-    "dance": ["Dance Fitness Instructor", "Choreographer", "Professional Dancer"],
-    "music": ["Musician", "Music Teacher", "Sound Engineer"],
-    "sports": ["Athlete", "Fitness Trainer", "Sports Coach"],
-    "coding": ["Software Engineer", "Data Scientist", "AI/ML Engineer"],
-    "health": ["Doctor", "Nurse", "Physiotherapist"],
-    "teaching": ["Teacher", "Educator", "Professor"],
-    # Add more interests as needed
-}
-
-# ----------------- Combine all career skills -----------------
+# ----------------- Combine all careers & skills -----------------
 all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()},
                       **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}}
 
-# ----------------- Helper Functions -----------------
+# ----------------- Text Normalization & Fuzzy Matching -----------------
 def normalize_text(text):
-    return text.lower().strip()
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
+def fuzzy_match_skill(query, threshold=70):
+    query_norm = normalize_text(query)
+    match, score = process.extractOne(query_norm, all_careers_skills.keys())
+    if score >= threshold:
+        return match, all_careers_skills[match]
+    return None, None
+
+# ----------------- DuckDuckGo Fallback -----------------
 def fetch_from_duckduckgo(query):
     try:
         url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
@@ -1665,6 +1665,7 @@ def fetch_from_duckduckgo(query):
         return None
     return None
 
+# ----------------- Wikipedia Fallback -----------------
 def get_wiki_summary(query):
     try:
         search_results = wikipedia.search(query)
@@ -1687,78 +1688,44 @@ def get_wiki_summary(query):
         return None
     return None
 
-def fuzzy_match_skill(query, threshold=70):
-    query_norm = normalize_text(query)
-    match, score = process.extractOne(query_norm, all_careers_skills.keys())
-    if score >= threshold:
-        return match, all_careers_skills[match]
-    return None, None
-
-# ----------------- ML Career Prediction -----------------
+# ----------------- ML Career Prediction (Example) -----------------
 def predict_top3_careers(query):
-    query_vec = vectorizer.transform([query])  # or embeddings
-    probs = model.predict_proba(query_vec)[0]
-    classes = model.classes_
-    top_idx = np.argsort(probs)[::-1][:3]
-    top3 = [(classes[i], probs[i]) for i in top_idx]
-    return top3
-
-def career_result(career, prob):
-    skills = all_careers_skills.get(career.lower(), [])
-    res = f"- {career} (confidence: {prob*100:.1f}%)\n"
-    if skills:
-        res += "  **Skills / Next Steps:**\n"
-        for s in skills:
-            res += f"    - {s}\n"
-    return res
-
-# ----------------- Interest Phrase Detection -----------------
-def detect_interest_career(query):
-    query_norm = normalize_text(query)
-    for interest, careers in interest_career_map.items():
-        if interest in query_norm:
-            top_career = careers[0]
-            skills = all_careers_skills.get(top_career.lower(), [])
-            res = f"💡 Based on your interest in '{interest}', you may consider **{top_career}**.\n"
-            if skills:
-                res += "**Skills / Next Steps:**\n"
-                for s in skills:
-                    res += f"  - {s}\n"
-            return res
-    return None
+    # Placeholder: Replace with your actual model code
+    # Return mock predictions for demonstration
+    return [("Doctor", 0.9), ("Nurse", 0.6), ("Software Engineer", 0.3)]
 
 # ----------------- Main Answer Function -----------------
 def get_answer(query):
-    # 0️⃣ Detect interest phrases first
-    interest_result = detect_interest_career(query)
-    if interest_result:
-        return interest_result
-
-    # 1️⃣ ML career prediction if user asks career/job
-    career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession", "like", "love"]
-    if any(k in query.lower() for k in career_keywords):
+    # 1️⃣ ML Career Prediction
+    career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
+    if any(k in query.lower() for k in career_keywords) or "i like" in query.lower():
         top3 = predict_top3_careers(query)
-        result = "💼 Top career suggestions based on your input:\n"
+        result = "💼 **Top career suggestions based on your input:**\n"
         for career, prob in top3:
-            result += career_result(career, prob)
+            skills = all_careers_skills.get(career.lower(), [])
+            result += f"- {career} (confidence: {prob*100:.1f}%)\n"
+            if skills:
+                result += "  **Skills / Next Steps:**\n"
+                for s in skills:
+                    result += f"    - {s}\n"
         return result
 
-    # 2️⃣ Fuzzy match skills/careers
+    # 2️⃣ Fuzzy Match
     match, skills = fuzzy_match_skill(query)
     if match:
-        return f"💡 Key skills / next steps for {match.title()}:\n- " + "\n- ".join(skills)
+        return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
 
-    # 3️⃣ Wikipedia fallback
+    # 3️⃣ Wikipedia
     wiki = get_wiki_summary(query)
     if wiki:
         return wiki
 
-    # 4️⃣ DuckDuckGo fallback
+    # 4️⃣ DuckDuckGo
     duck = fetch_from_duckduckgo(query)
     if duck:
         return duck
 
-    # 5️⃣ Default response
+    # 5️⃣ Default
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
 # ----------------- Streamlit UI -----------------
@@ -1771,14 +1738,14 @@ if user_query:
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[:10]
 
-# Latest answer
+# Latest Answer
 if st.session_state.chat_history:
     st.subheader("🧠 Latest Answer")
     latest_q, latest_a = st.session_state.chat_history[0]
     st.markdown(f"**You:** {latest_q}")
     st.markdown(f"**Bot:** {latest_a}")
 
-# Previous chats
+# Previous Chats
 st.markdown("---")
 st.subheader("💬 Previous Chats")
 if len(st.session_state.chat_history) > 1:
@@ -1788,9 +1755,9 @@ if len(st.session_state.chat_history) > 1:
 else:
     st.write("_No previous chats yet._")
 
-# Clear chat button
+# Clear chat
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.experimental_rerun()
 
-st.caption("💡 Tip: Ask about careers, skills, trending jobs, education requirements, or any topic for detailed answers.")
+st.caption("💡 Tip: Ask about careers, skills, trending jobs, or education requirements for detailed answers.")

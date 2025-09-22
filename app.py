@@ -1592,7 +1592,28 @@ skills_fallback = {
         "Motivation",
         "Creativity",
         "Communication",
-        "Energy and stamina"]
+        "Energy and stamina"],
+    "singing": [
+        "Mastery of a primary instrument or vocals",
+        "Understanding of music theory and composition",
+        "Collaboration and teamwork with other artists",
+        "Stage presence and confidence",
+        "Basic audio production and recording knowledge"
+    ],
+    "singer": [
+        "Vocal control and breathing techniques",
+        "Music theory and song interpretation",
+        "Performance skills and stage presence",
+        "Collaboration with other musicians",
+        "Practice and consistency"
+    ],
+    "music": [  # general catch-all
+        "Mastery of a primary instrument or vocals",
+        "Understanding of music theory and composition",
+        "Collaboration and teamwork with other artists",
+        "Stage presence and confidence"
+    ]
+
 }
 
 
@@ -1662,36 +1683,33 @@ def predict_top3_careers(query):
 
 # ---------- Main Answer Function ----------
 def get_answer(query):
-    # 1️⃣ Career prediction request
+    # 1️⃣ Check if user asks about careers explicitly
     career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
     if any(k in query.lower() for k in career_keywords):
         top3 = predict_top3_careers(query)
-        result = "💼 **Top 3 career suggestions based on your input:**\n"
-        for career, prob in top3:
-            skills = all_careers_skills.get(career.lower(), [])
-            result += f"- {career} (confidence: {prob*100:.1f}%)\n"
-            if skills:
-                result += "  **Skills / Next Steps:**\n"
-                for s in skills:
-                    result += f"    - {s}\n"
-        return result
+        # ... return top 3 suggestions ...
 
-    # 2️⃣ Fuzzy match skills/careers
+    # 2️⃣ Check curated skills fallback first
+    for key, skills in skills_fallback.items():
+        if key.lower() in query.lower():
+            return f"💡 **Key skills for {key.title()}:**\n- " + "\n- ".join(skills)
+
+    # 3️⃣ Fuzzy match skills / careers
     match, skills = fuzzy_match_skill(query)
     if match:
         return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
 
-    # 3️⃣ Wikipedia fallback
+    # 4️⃣ Wikipedia fallback
     wiki = get_wiki_summary(query)
     if wiki:
         return wiki
 
-    # 4️⃣ DuckDuckGo fallback
+    # 5️⃣ DuckDuckGo fallback
     duck = fetch_from_duckduckgo(query)
     if duck:
         return duck
 
-    # 5️⃣ Default response
+    # 6️⃣ Default response
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
 # ---------- Streamlit UI ----------

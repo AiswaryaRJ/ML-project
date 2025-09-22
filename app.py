@@ -1630,20 +1630,9 @@ skills_fallback = {
 
 }
 
-# ----------------- Prepare Semantic Matching -----------------
-all_careers_skills = {
-    **{k.lower(): v for k,v in skills_fallback.items()},
-    **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}
-}
-
-# Initialize sentence transformer for embeddings
-semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
-
-# Precompute career embeddings
-career_embeddings = semantic_model.encode(list(all_careers_skills.keys()), convert_to_tensor=True)
-
 # ----------------- Helper Functions -----------------
 def fetch_from_duckduckgo(query):
+    """Fallback search using DuckDuckGo Instant Answer API."""
     try:
         url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
         r = requests.get(url, timeout=5).json()
@@ -1653,7 +1642,7 @@ def fetch_from_duckduckgo(query):
             for topic in r["RelatedTopics"]:
                 if isinstance(topic, dict) and topic.get("Text"):
                     return topic["Text"]
-    except:
+    except Exception:
         return None
     return None
 
@@ -1672,52 +1661,65 @@ def get_wiki_summary(query):
             except:
                 continue
         if best_page and best_score > 0.35:
-            sentences = best_page.summary.split(". ")
+            text = best_page.summary.strip()
+            sentences = text.split(". ")
             return ". ".join(sentences[:5]) + "."
     except:
         return None
     return None
+
+# Normalize all skills and career keys
+all_careers_skills = {**{k.lower(): v for k, v in skills_fallback.items()},
+                      **{k.lower(): v.get("next_steps", []) for k, v in career_info.items()}}
 
 def normalize_text(text):
     return text.lower().strip()
 
 def fuzzy_match_skill(query, threshold=70):
     query_norm = normalize_text(query)
-    match, score = process.extractOne(query_norm, all_careers_skills.keys(), scorer=fuzz.token_sort_ratio)
+    match, score = process.extractOne(query_norm, all_careers_skills.keys())
     if score >= threshold:
         return match, all_careers_skills[match]
     return None, None
 
-def semantic_match(query, top_k=3):
-    query_vec = semantic_model.encode([query], convert_to_tensor=True)
-    scores = util.cos_sim(query_vec, career_embeddings)[0]
-    top_idx = scores.argsort(descending=True)[:top_k]
-    results = []
-    careers_list = list(all_careers_skills.keys())
-    for i in top_idx:
-        career = careers_list[i]
-        confidence = float(scores[i])
-        results.append((career, confidence, all_careers_skills[career]))
-    return results
+# ----------------- Career Suggestion (ML / Mock Prediction) -----------------
+# NOTE: Replace this with your trained model when available
+def predict_top3_careers(query):
+    """Mock prediction using keyword matching for demonstration."""
+    matches = []
+    for career in all_careers_skills.keys():
+        if career in query.lower() or "i like" in query.lower():
+            matches.append((career, 0.9, all_careers_skills[career]))
+    if not matches:  # fallback to first 3 careers
+        careers = list(all_careers_skills.keys())[:3]
+        matches = [(c, 0.5, all_careers_skills[c]) for c in careers]
+    return matches
 
 # ----------------- Main Answer Function -----------------
 def get_answer(query):
     query_lower = query.lower()
 
-    # 1️⃣ Career-specific phrases (like "I like dancing")
-    career_keywords = ["career", "job", "profession", "suit me", "suggest", "what should i do"]
-    if any(k in query_lower for k in career_keywords) or "i like" in query_lower or "i want" in query_lower:
-        matches = semantic_match(query)
+    # 1️⃣ Career-related phrases or personal interest
+    career_keywords = ["career", "job", "profession", "suit me", "suggest", "what should i do", "i like", "i want"]
+    if any(k in query_lower for k in career_keywords):
+        matches = predict_top3_careers(query)
         result = "💼 **Top career suggestions based on your input:**\n"
         for career, conf, skills in matches:
+            info = career_info.get(career, {})
             result += f"- {career.title()} (confidence: {conf*100:.1f}%)\n"
-            if skills:
-                result += "  **Skills / Next Steps:**\n"
-                for s in skills:
+            if info.get("next_steps"):
+                result += "  **Next Steps / Skills:**\n"
+                for s in info["next_steps"]:
                     result += f"    - {s}\n"
+            if info.get("education"):
+                result += f"  **Education Required:** {info['education']}\n"
+            if info.get("trending_skills"):
+                result += "  **Trending Skills:** " + ", ".join(info["trending_skills"]) + "\n"
+            if info.get("top_jobs"):
+                result += "  **Top Jobs / Roles:** " + ", ".join(info["top_jobs"]) + "\n"
         return result
 
-    # 2️⃣ Fuzzy match as fallback
+    # 2️⃣ Fuzzy match skills/careers
     match, skills = fuzzy_match_skill(query)
     if match:
         return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
@@ -1745,7 +1747,7 @@ if user_query:
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[:10]
 
-# Latest answer
+# Latest Answer
 if st.session_state.chat_history:
     st.subheader("🧠 Latest Answer")
     latest_q, latest_a = st.session_state.chat_history[0]
@@ -1762,9 +1764,9 @@ if len(st.session_state.chat_history) > 1:
 else:
     st.write("_No previous chats yet._")
 
-# Clear chat button
+# Clear chat
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.experimental_rerun()
 
-st.caption("💡 Tip: Ask about careers, skills, education, trending jobs, or any topic for detailed answers.")
+st.caption("💡 Tip: Ask about careers, skills, education requirements, trending skills, or any topic for detailed answers.")

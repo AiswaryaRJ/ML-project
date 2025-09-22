@@ -1630,23 +1630,18 @@ skills_fallback = {
 
 }
 
+# Ensure all keys are lowercase for consistency
+all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()}}
+# Add career_info if you have additional structured data
+# all_careers_skills.update({k.lower(): v.get("next_steps", []) for k,v in career_info.items()})
 
-# Combine all careers & skills for fuzzy matching
-all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()},
-                      **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}}
+# ------------------ Helper Functions ------------------
 
-# ----------------- Helper Functions -----------------
 def normalize_text(text):
     return text.lower().strip()
 
-def fuzzy_match_skill(query, threshold=70):
-    query_norm = normalize_text(query)
-    match, score = process.extractOne(query_norm, all_careers_skills.keys())
-    if score >= threshold:
-        return match, all_careers_skills[match]
-    return None, None
-
 def fetch_from_duckduckgo(query):
+    """Fallback search using DuckDuckGo Instant Answer API."""
     try:
         url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
         r = requests.get(url, timeout=5).json()
@@ -1656,7 +1651,7 @@ def fetch_from_duckduckgo(query):
             for topic in r["RelatedTopics"]:
                 if isinstance(topic, dict) and topic.get("Text"):
                     return topic["Text"]
-    except:
+    except Exception:
         return None
     return None
 
@@ -1682,71 +1677,91 @@ def get_wiki_summary(query):
         return None
     return None
 
-# ----------------- ML Career Prediction -----------------
+def fuzzy_match_multiple_skills(query, threshold=70):
+    query_norm = normalize_text(query)
+    matched_careers = []
+    for career in all_careers_skills.keys():
+        score = SequenceMatcher(None, career, query_norm).ratio() * 100
+        if score >= threshold:
+            matched_careers.append((career, all_careers_skills[career]))
+    return matched_careers
+
+# ------------------ GPT / AI Hybrid Placeholder ------------------
+def generate_answer(prompt):
+    """
+    Placeholder for GPT/FLAN-T5 / other ML-generated answer.
+    If not using GPT, this can be left empty or call a local model.
+    """
+    # Example static response for demonstration
+    return ""  # Leave blank to fallback on Wikipedia/DuckDuckGo
+
+# ------------------ ML Career Prediction Placeholder ------------------
 def predict_top3_careers(query):
-    # Assuming vectorizer and model are already loaded
-    query_vec = vectorizer.transform([query])
-    probs = model.predict_proba(query_vec)[0]
-    classes = model.classes_
-    top_idx = np.argsort(probs)[::-1][:3]
-    top3 = [(classes[i], probs[i]) for i in top_idx]
-    return top3
+    """
+    Placeholder function if you have a trained ML model.
+    """
+    # Return dummy values if no model yet
+    return [("Software Engineer", 0.85), ("Data Scientist", 0.75), ("AI/ML Engineer", 0.65)]
 
-# ----------------- Main Answer Function -----------------
-def get_answer(query):
-    query_lower = query.lower()
-
-    # 1️⃣ Check fuzzy match for skills/careers
-    match, skills = fuzzy_match_skill(query)
-    if match:
-        return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
-
-    # 2️⃣ Trending skills query
-    trending_keywords = ["best skills", "top skills", "skills required", "future jobs", "high demand jobs"]
-    if any(k in query_lower for k in trending_keywords):
-        trending = skills_fallback.get("trending skills 2026", [])
-        return "💡 **Trending / essential skills for upcoming jobs:**\n- " + "\n- ".join(trending)
-
-    # 3️⃣ Career suggestion using ML
-    career_keywords = ["career", "job", "profession", "suit me", "suggest"]
-    if any(k in query_lower for k in career_keywords):
+# ------------------ Main Answer Function ------------------
+def get_hybrid_answer_multi(query):
+    # 1️⃣ Check multiple fuzzy matches first
+    matched_careers = fuzzy_match_multiple_skills(query)
+    if matched_careers:
+        result = ""
+        for career, skills in matched_careers:
+            result += f"💡 **Key skills / next steps for {career.title()}:**\n- " + "\n- ".join(skills) + "\n\n"
+        return result.strip()
+    
+    # 2️⃣ Career prediction if query implies career advice
+    career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
+    if any(k in query.lower() for k in career_keywords):
         top3 = predict_top3_careers(query)
         result = "💼 **Top 3 career suggestions based on your input:**\n"
         for career, prob in top3:
-            info = all_careers_skills.get(career.lower(), [])
+            skills = all_careers_skills.get(career.lower(), [])
             result += f"- {career} (confidence: {prob*100:.1f}%)\n"
-            if info:
+            if skills:
                 result += "  **Skills / Next Steps:**\n"
-                for s in info:
+                for s in skills:
                     result += f"    - {s}\n"
         return result
 
+    # 3️⃣ GPT / AI hybrid answer
+    prompt = f"You are a career guidance assistant. Provide detailed info for '{query}'."
+    answer = generate_answer(prompt)
+
     # 4️⃣ Wikipedia fallback
-    wiki = get_wiki_summary(query)
-    if wiki:
-        return wiki
+    if len(answer) < 20:
+        wiki = get_wiki_summary(query)
+        if wiki:
+            return wiki
 
     # 5️⃣ DuckDuckGo fallback
-    duck = fetch_from_duckduckgo(query)
-    if duck:
-        return duck
+    if len(answer) < 20:
+        duck = fetch_from_duckduckgo(query)
+        if duck:
+            return duck
 
-    # 6️⃣ Optional GPT-based fallback
-    # response = get_gpt_response(query)
-    # return response
-
+    # 6️⃣ Default
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# ----------------- Streamlit UI -----------------
+# ------------------ Streamlit UI ------------------
+
 st.header("🤖 Chatbot Assistant")
+
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []  # stores tuples: (question, answer)
+
 user_query = st.text_input("Ask me about careers, skills, or any topic:")
 
 if user_query:
-    answer = get_answer(user_query)
+    answer = get_hybrid_answer_multi(user_query)
     st.session_state.chat_history.insert(0, (user_query, answer))
-    st.session_state.chat_history = st.session_state.chat_history[:10]
+    if len(st.session_state.chat_history) > 10:
+        st.session_state.chat_history = st.session_state.chat_history[:10]
 
-# Latest answer
+# Show latest answer
 if st.session_state.chat_history:
     st.subheader("🧠 Latest Answer")
     latest_q, latest_a = st.session_state.chat_history[0]
@@ -1763,7 +1778,7 @@ if len(st.session_state.chat_history) > 1:
 else:
     st.write("_No previous chats yet._")
 
-# Clear chat
+# Clear chat button
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.experimental_rerun()

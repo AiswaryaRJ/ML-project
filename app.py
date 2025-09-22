@@ -18,6 +18,35 @@ import wikipedia
 import requests
 from difflib import SequenceMatcher
 
+# ---------------- Text Preprocessing & Typo Handling ----------------
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from fuzzywuzzy import process
+import re
+import pickle
+from sentence_transformers import SentenceTransformer
+import numpy as np
+
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+
+def preprocess_text(text):
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)  # remove punctuation
+    words = [lemmatizer.lemmatize(word) for word in text.split() if word not in stop_words]
+    return ' '.join(words)
+    
+# List of all careers from your dataset
+career_names = df['Career'].unique()
+
+def correct_typo(text, choices=career_names, threshold=80):
+    match, score = process.extractOne(text, choices)
+    return match if score >= threshold else text
+
 
 # ---------------- Streamlit Page Settings ----------------
 st.set_page_config(page_title="Career Guidance AI", layout="centered")
@@ -27,6 +56,16 @@ st.caption("Describe your interests/skills and get career suggestions, courses, 
 # ---------------- Load dataset ----------------
 df = pd.read_csv("generated_dataset.csv")
 career_names = df['Career'].unique()
+
+# Load trained ML model and vectorizer
+with open("career_model.pkl", "rb") as f:
+    model = pickle.load(f)
+with open("vectorizer.pkl", "rb") as f:
+    vectorizer = pickle.load(f)
+
+# Optional: for sentence embeddings instead of TF-IDF
+embedding_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+
 
 # ---------------- Career Info & Courses ----------------
 career_info = {

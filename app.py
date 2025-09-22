@@ -999,13 +999,24 @@ if uploaded_resume:
 
 # ---------------- Chatbot with ML Career Prediction ----------------
 
+# ---------------- Chatbot with ML Career Prediction (Improved) ----------------
+import requests
+import wikipedia
+from difflib import SequenceMatcher
+from fuzzywuzzy import process
+import streamlit as st
+import numpy as np
+
 st.header("🤖 Chatbot Assistant")
 
 # Initialize session state
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []  # stores tuples: (question, answer)
 
-# ---------- Helper Functions ----------
+# ---------- Utility Functions ----------
+def normalize_text(text):
+    return text.lower().strip()
+
 def fetch_from_duckduckgo(query):
     try:
         url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
@@ -1041,6 +1052,8 @@ def get_wiki_summary(query):
     except:
         return None
     return None
+
+# ---------- Skills 
 
 # Small curated skills fallback
 skills_fallback = {
@@ -1626,69 +1639,71 @@ skills_fallback = {
     
 }
 
-# Career prediction using top-3 ML model
+# Ensure keys are all lowercase for consistency
+all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()},
+                      **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}}
+
+def fuzzy_match_skill(query, threshold=70):
+    query_norm = normalize_text(query)
+    match, score = process.extractOne(query_norm, all_careers_skills.keys())
+    if score >= threshold:
+        return match, all_careers_skills[match]
+    return None, None
+
+# ---------- ML Career Prediction ----------
 def predict_top3_careers(query):
-    # Preprocess query (optional if using embeddings)
-    query_vec = vectorizer.transform([query])  # or embedding_model.encode([query]) if using embeddings
-    probs = model.predict_proba(query_vec)[0]  # works for multi-class classifier
+    query_vec = vectorizer.transform([query])  # or embedding_model.encode([query])
+    probs = model.predict_proba(query_vec)[0]
     classes = model.classes_
     top_idx = np.argsort(probs)[::-1][:3]
     top3 = [(classes[i], probs[i]) for i in top_idx]
     return top3
 
-def get_career_skills(query):
-    for career in career_info.keys():
-        if career.lower() in query.lower():
-            info = career_info[career]
-            skills = info.get("next_steps", [])
-            if skills:
-                return f"💡 **Skills / next steps for {career}:**\n- " + "\n- ".join(skills)
-    return None
-
-# Main answer function with career prediction integration
+# ---------- Main Answer Function ----------
 def get_answer(query):
-    # Check if user is asking for career advice
+    # 1️⃣ Career prediction request
     career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
     if any(k in query.lower() for k in career_keywords):
         top3 = predict_top3_careers(query)
         result = "💼 **Top 3 career suggestions based on your input:**\n"
         for career, prob in top3:
+            # Include skills/next steps
+            skills = all_careers_skills.get(career.lower(), [])
             result += f"- {career} (confidence: {prob*100:.1f}%)\n"
+            if skills:
+                result += "  **Skills / Next Steps:**\n"
+                for s in skills:
+                    result += f"    - {s}\n"
         return result
 
-    # Career-specific info fallback
-    career_skills = get_career_skills(query)
-    if career_skills:
-        return career_skills
+    # 2️⃣ Fuzzy match skills/careers
+    match, skills = fuzzy_match_skill(query)
+    if match:
+        return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
 
-    # Curated skills fallback
-    for key, skills in skills_fallback.items():
-        if key in query.lower():
-            return f"💡 **Key skills for {key.title()}:**\n- " + "\n- ".join(skills)
-
-    # Wikipedia fallback
+    # 3️⃣ Wikipedia fallback
     wiki = get_wiki_summary(query)
     if wiki:
         return wiki
 
-    # DuckDuckGo fallback
+    # 4️⃣ DuckDuckGo fallback
     duck = fetch_from_duckduckgo(query)
     if duck:
         return duck
 
-    # Default response
+    # 5️⃣ Default response
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# ---------- UI ----------
+# ---------- Streamlit UI ----------
 user_query = st.text_input("Ask me about careers, skills, or any topic:")
 
 if user_query:
     answer = get_answer(user_query)
     st.session_state.chat_history.insert(0, (user_query, answer))
     if len(st.session_state.chat_history) > 10:
-        st.session_state.chat_history = st.session_state.chat_history[:10]  # keep last 10
+        st.session_state.chat_history = st.session_state.chat_history[:10]
 
-# Show latest answer
+# Latest answer
 if st.session_state.chat_history:
     st.subheader("🧠 Latest Answer")
     latest_q, latest_a = st.session_state.chat_history[0]

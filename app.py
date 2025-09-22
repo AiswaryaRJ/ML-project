@@ -721,14 +721,6 @@ def get_tfidf_and_vectors(career_info_dict):
 
 tfidf, career_matrix, career_names = get_tfidf_and_vectors(career_info)
 
-# ---------------- Single Input Prediction ----------------
-st.subheader("Career Prediction (Single Input)")
-user_input = st.text_input("Describe your interests/skills:")
-if user_input:
-    top_predictions = predict_top3(user_input)
-    st.subheader("Top Career Suggestions:")
-    for career, prob in top_predictions:
-        st.write(f"{career}: {prob}%")
         
 
 # ---------------- Multi-Interest Career Suggestions ----------------

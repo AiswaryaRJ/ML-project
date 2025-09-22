@@ -1635,11 +1635,12 @@ skills_fallback = {
 
 }
 
+
 # ---------------- Combine Skills -----------------
 all_careers_skills = {**{k.lower(): v for k, v in skills_fallback.items()},
                       **{k.lower(): v.get("next_steps", []) for k, v in career_info.items()}}
 
-phrase_career_map = ({
+phrase_career_map = {
     "i like dancing": "Dance Fitness Instructor",
     "i enjoy dancing": "Dance Fitness Instructor",
     "i love dancing": "Dance Fitness Instructor",
@@ -1655,8 +1656,7 @@ phrase_career_map = ({
     "high salary tech jobs": "Software Engineer",
     "i love drawing": "Graphic Designer",
     "i like helping people": "Social Worker"
-
-})
+}
 
 # ---------------- Helper Functions -----------------
 def normalize_text(text):
@@ -1706,7 +1706,6 @@ def fuzzy_match_skill(query, threshold=70):
 
 # ---------------- ML Prediction Placeholder -----------------
 def predict_top3_careers(query):
-    # Dummy model replacement - refine based on query keywords
     q = query.lower()
     if "data science" in q or "ai" in q:
         return [("Data Scientist", 0.95), ("ML Engineer", 0.85), ("AI Researcher", 0.8)]
@@ -1714,15 +1713,21 @@ def predict_top3_careers(query):
         return [("Doctor", 0.9), ("Nurse", 0.8), ("Medical Researcher", 0.7)]
     else:
         return [("Software Engineer", 0.9), ("Product Manager", 0.7), ("UX Designer", 0.6)]
+
 # ---------------- OpenAI GPT Fallback -----------------
-openai.api_key = st.secrets.get("OPENAI_API_KEY", "")  # Add in Streamlit secrets
+openai_key = st.secrets.get("OPENAI_API_KEY", "")
+if not openai_key:
+    st.warning("⚠️ OpenAI API key missing. Add it to `.streamlit/secrets.toml`.")
+openai.api_key = openai_key
 
 def openai_fallback(query):
+    if not openai_key:
+        return None
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[{"role":"system", "content":"You are a career advisor assistant."},
-                      {"role":"user", "content": query}],
+            messages=[{"role": "system", "content": "You are a career advisor assistant."},
+                      {"role": "user", "content": query}],
             max_tokens=250
         )
         return response.choices[0].message.content
@@ -1743,7 +1748,7 @@ def get_answer(query):
             return result
 
     # 1️⃣ Learned phrases
-    for phrase, career in st.session_state.learned_careers.items():
+    for phrase, career in st.session_state.get("learned_careers", {}).items():
         if phrase in query_norm:
             skills = all_careers_skills.get(career.lower(), [])
             result = f"💼 Suggested Career (learned): {career}\n"
@@ -1752,7 +1757,7 @@ def get_answer(query):
             return result
 
     # 2️⃣ Career keywords ML prediction
-    career_keywords = ["career","job","suit me","suggest","profession","best","future"]
+    career_keywords = ["career","job","suit me","suggest","profession","best","future","top paying","high salary"]
     if any(k in query_norm for k in career_keywords):
         top3 = predict_top3_careers(query)
         result = "💼 Top career suggestions based on your input:\n"
@@ -1778,11 +1783,10 @@ def get_answer(query):
     if duck:
         return duck
 
-    # ---------------- OpenAI GPT Fallback -----------------
-openai_key = st.secrets.get("OPENAI_API_KEY", "")
-if not openai_key:
-    st.warning("⚠️ OpenAI API key missing. Add it to `.streamlit/secrets.toml`.")
-openai.api_key = openai_key
+    # 6️⃣ OpenAI fallback
+    gpt_ans = openai_fallback(query)
+    if gpt_ans:
+        return gpt_ans
 
     # 7️⃣ Default
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
@@ -1791,7 +1795,7 @@ openai.api_key = openai_key
 st.title("🤖 Chatbot Assistant")
 st.write("Ask me about careers, skills, trending jobs, or any topic:")
 
-# Initialize chat history if not present
+# Initialize chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "just_cleared" not in st.session_state:
@@ -1804,7 +1808,6 @@ user_query = st.text_input("💬 Your question:")
 if user_query:
     answer = get_answer(user_query)
     st.session_state.chat_history.insert(0, (user_query, answer))
-    # Limit chat history to last 10 entries
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[:10]
 
@@ -1830,15 +1833,12 @@ if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.session_state.just_cleared = True
     try:
-        # st.experimental_rerun() is deprecated in newer Streamlit versions
-        st.rerun()
+        st.rerun()  # New API for rerun
     except:
         st.experimental_rerun()
 
-# Confirmation message after clearing
 if st.session_state.just_cleared:
     st.session_state.just_cleared = False
     st.success("✅ Chat history cleared!")
 
-# Footer tip
 st.caption("💡 Tip: Ask about careers, skills, trending jobs, or any topic for detailed answers.")

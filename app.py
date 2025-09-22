@@ -40,8 +40,6 @@ def preprocess_text(text):
     words = [lemmatizer.lemmatize(word) for word in text.split() if word not in stop_words]
     return ' '.join(words)
     
-# List of all careers from your dataset
-career_names = df['Career'].unique()
 
 def correct_typo(text, choices=career_names, threshold=80):
     match, score = process.extractOne(text, choices)
@@ -720,6 +718,24 @@ def get_tfidf_and_vectors(career_info_dict):
     return tfidf, career_matrix, career_names
 
 tfidf, career_matrix, career_names = get_tfidf_and_vectors(career_info)
+
+
+def predict_top3(user_input, top_n=3, use_embeddings=False):
+    # Preprocess
+    cleaned_input = preprocess_text(user_input)
+    cleaned_input = correct_typo(cleaned_input)
+
+    # Feature extraction
+    if use_embeddings:
+        X_input = embedding_model.encode([cleaned_input])
+    else:
+        X_input = vectorizer.transform([cleaned_input])
+
+    # Predict probabilities
+    probs = model.predict_proba(X_input)[0]
+    top_indices = np.argsort(probs)[::-1][:top_n]
+    results = [(model.classes_[i], round(probs[i]*100, 2)) for i in top_indices]
+    return results
 
 # ---------------- Multi-Interest Career Suggestions ----------------
 sample_examples = [

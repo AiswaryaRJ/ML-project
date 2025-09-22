@@ -72,3 +72,4 @@ pdfplumber
 pandas
 python-docx
 nltk
+openai

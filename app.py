@@ -997,25 +997,14 @@ if uploaded_resume:
 
 #-----------Chatbot-----------------
 
-# ---------------- Chatbot with ML Career Prediction ----------------
-
-# ---------------- Chatbot with ML Career Prediction (Improved) ----------------
-import requests
-import wikipedia
-from difflib import SequenceMatcher
-from fuzzywuzzy import process
-import streamlit as st
-import numpy as np
+# ---------------- Chatbot with ML Career Prediction & Fuzzy Skill Matching ----------------
 
 st.header("🤖 Chatbot Assistant")
 
-# Initialize session state
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []  # stores tuples: (question, answer)
+# ---------- Helper Functions ----------
 
-# ---------- Utility Functions ----------
 def normalize_text(text):
-    return text.lower().strip()
+    return re.sub(r'[^\w\s]', '', text.lower().strip())
 
 def fetch_from_duckduckgo(query):
     try:
@@ -1052,6 +1041,9 @@ def get_wiki_summary(query):
     except:
         return None
     return None
+
+# ---------- Fuzzy Matching ----------
+# Merge skills_fallback and career_info into a single lowercase dictionary
 
 # ---------- Skills 
 
@@ -1645,9 +1637,15 @@ all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()},
 
 def fuzzy_match_skill(query, threshold=70):
     query_norm = normalize_text(query)
+    # Full query match
     match, score = process.extractOne(query_norm, all_careers_skills.keys())
     if score >= threshold:
         return match, all_careers_skills[match]
+    # Check individual words if full query fails
+    for word in query_norm.split():
+        match, score = process.extractOne(word, all_careers_skills.keys())
+        if score >= threshold:
+            return match, all_careers_skills[match]
     return None, None
 
 # ---------- ML Career Prediction ----------
@@ -1667,7 +1665,6 @@ def get_answer(query):
         top3 = predict_top3_careers(query)
         result = "💼 **Top 3 career suggestions based on your input:**\n"
         for career, prob in top3:
-            # Include skills/next steps
             skills = all_careers_skills.get(career.lower(), [])
             result += f"- {career} (confidence: {prob*100:.1f}%)\n"
             if skills:
@@ -1695,6 +1692,9 @@ def get_answer(query):
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
 # ---------- Streamlit UI ----------
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []  # stores (question, answer)
+
 user_query = st.text_input("Ask me about careers, skills, or any topic:")
 
 if user_query:

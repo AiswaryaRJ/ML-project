@@ -24,7 +24,7 @@ from difflib import SequenceMatcher
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
+import openai
 import json, os
 
 # ---------------- Streamlit Page Settings ----------------

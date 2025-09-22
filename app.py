@@ -893,8 +893,7 @@ if uploaded_file:
         if "description" not in df_csv.columns:
             st.error("CSV must contain 'description' column.")
         else:
-            df_csv['LogReg_Predicted'] = df_csv['description'].apply(lambda x: cached_predict(x)['LogisticRegression']['career'])
-            df_csv['RF_Predicted'] = df_csv['description'].apply(lambda x: cached_predict(x)['RandomForest']['career'])
+            df_csv['Top3_Predictions'] = df_csv['description'].apply(lambda x: predict_top3(x))
             st.dataframe(df_csv)
     except Exception as e:
         st.error(f"Error reading CSV: {e}")

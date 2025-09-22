@@ -837,6 +837,7 @@ sample_examples = [
 
 
 # ----- Multi-Interest Section -----
+
 st.subheader("Select multiple interests (up to 5)")
 selected = st.multiselect("Choose:", options=sample_examples, max_selections=5)
 k_multi = st.slider("How many multi-interest suggestions?", 1, 5, 3)
@@ -859,24 +860,13 @@ if st.button("Suggest careers"):
                 st.write("**Next Steps:**")
                 for step in info["next_steps"]:
                     st.write(f"- {step}")
-            career_list = list(career_courses.keys())
-            career_list.append("Other")
-
-           # Use the predicted career directly
-            # career = st.selectbox("Select a career:", career_list)  # <-- commented out
-
             courses = career_courses.get(career, [])
-
             if courses:
                 st.markdown(f"### Recommended courses for {career}:")
                 for course_name, course_link in courses:
                     st.markdown(f"- [{course_name}]({course_link})")
             else:
-                st.warning(
-                    f"No courses found for the career: '{career}'. "
-                    "Please select another career or check back later."
-                )
-
+                st.warning(f"No courses found for the career: '{career}'.")
 
 # ---------------- Bulk CSV Predictions ----------------
 st.subheader("Bulk CSV Predictions")
@@ -916,7 +906,6 @@ def extract_resume_text(uploaded_file):
 
 if uploaded_resume:
     resume_text = extract_resume_text(uploaded_resume)
-    
     if not resume_text.strip():
         st.warning("Resume text could not be extracted or is empty.")
     else:
@@ -936,7 +925,7 @@ if uploaded_resume:
         chosen_career = top_matches[0][0] if target_career == "Auto-detect (best match)" else target_career
         st.write(f"### Tailored analysis for: **{chosen_career}**")
 
-        # TF-IDF keywords for chosen career
+        # TF-IDF keywords
         feature_names = tfidf.get_feature_names_out()
         chosen_idx = career_names.index(chosen_career) if chosen_career in career_names else None
         career_top_terms = []
@@ -956,13 +945,13 @@ if uploaded_resume:
         st.write("**Missing keywords:**")
         st.info(", ".join(missing_keywords) if missing_keywords else "None")
 
-        # Detect contact info
+        # Contact info
         email_re = r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"
         phone_re = r"(\+?\d[\d\-\s]{7,}\d)"
         emails = re.findall(email_re, resume_text)
         phones = re.findall(phone_re, resume_text)
 
-        # Check sections
+        # Sections
         sections = {sec: bool(re.search(rf"\b{sec}\b", resume_lower)) for sec in ["experience", "education", "skills", "projects"]}
         numbers = re.findall(r"\b\d{1,4}\b", resume_text)
         quant_present = any(int(n) >= 1 for n in numbers) if numbers else False
@@ -986,15 +975,7 @@ if uploaded_resume:
         st.markdown(f"## Overall alignment score: **{overall_pct}%**")
 
         # Downloadable report
-        report_lines = [
-            "Resume Analyzer Report",
-            f"Target career: {chosen_career}",
-            f"Overall score: {overall_pct}%",
-            "Matched keywords:", ", ".join(matched_keywords) or "None",
-            "Missing keywords:", ", ".join(missing_keywords) or "None",
-        ]
-        report_text = "\n".join(report_lines)
-        st.download_button("Download resume report", report_text, file_name="resume_report.txt")
+        report_lines
 
 #-----------Chatbot-----------------
 

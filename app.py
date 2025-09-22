@@ -1390,7 +1390,7 @@ skills_fallback = {
     "event host": ["Public speaking", "Organization", "Communication", "Engagement"],
     "motivational speaker": ["Public speaking", "Empathy", "Storytelling", "Communication"],
     "life coach": ["Guidance", "Empathy", "Communication", "Problem-solving"],
-    "parliament researcher"] = ["Research", "Writing", "Policy analysis", "Organization"],
+    "parliament researcher": ["Research", "Writing", "Policy analysis", "Organization"],
     "translator": ["Language proficiency", "Cultural knowledge", "Attention to detail", "Communication"],
     "interpreter": ["Listening skills", "Language proficiency", "Quick thinking", "Communication"],
     "tour guide": ["Local knowledge", "Communication", "Storytelling", "Customer service"],

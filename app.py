@@ -1774,36 +1774,35 @@ def get_answer(query):
     # 7️⃣ Default
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# ---------------- Streamlit UI -----------------
-st.header("🤖 Career Chatbot Assistant")
-user_query = st.text_input("Ask me about careers, skills, trending jobs, education, or any topic:")
+# ----------------- Streamlit UI for Chatbot -----------------
+st.title("🤖 Chatbot Assistant")
+st.write("Ask me about careers, skills, trending jobs, or any topic:")
 
+# Initialize chat history if not present
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+if "just_cleared" not in st.session_state:
+    st.session_state.just_cleared = False
+
+# User input
+user_query = st.text_input("💬 Your question:")
+
+# Process user query
 if user_query:
-    # Teach new phrase
-    if user_query.lower().startswith("learn:"):
-        try:
-            _, new_career = user_query.split(":", 1)
-            new_career = new_career.strip()
-            st.session_state.learned_careers[user_query] = new_career
-            st.success(f"✅ Learned new career mapping: {new_career}")
-            answer = f"💡 Got it! I will remember this phrase relates to {new_career}."
-        except:
-            answer = "❌ Format should be: Learn: <Career Name>"
-    else:
-        answer = get_answer(user_query)
-
+    answer = get_answer(user_query)
     st.session_state.chat_history.insert(0, (user_query, answer))
+    # Limit chat history to last 10 entries
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[:10]
 
-# Latest answer
+# Latest answer display
 if st.session_state.chat_history:
     st.subheader("🧠 Latest Answer")
     latest_q, latest_a = st.session_state.chat_history[0]
     st.markdown(f"**You:** {latest_q}")
     st.markdown(f"**Bot:** {latest_a}")
 
-# Previous chats
+# Divider for previous chats
 st.markdown("---")
 st.subheader("💬 Previous Chats")
 if len(st.session_state.chat_history) > 1:
@@ -1813,9 +1812,16 @@ if len(st.session_state.chat_history) > 1:
 else:
     st.write("_No previous chats yet._")
 
-# Clear chat
+# Clear chat button with safe rerun
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
+    st.session_state.just_cleared = True
     st.experimental_rerun()
 
-st.caption("💡 Tip: Ask about careers, skills, trending skills, education, or any topic for detailed answers.")
+# Confirmation message after clearing
+if st.session_state.just_cleared:
+    st.session_state.just_cleared = False
+    st.success("✅ Chat history cleared!")
+
+# Footer tip
+st.caption("💡 Tip: Ask about careers, skills, trending jobs, or any topic for detailed answers.")

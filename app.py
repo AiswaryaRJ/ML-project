@@ -998,10 +998,6 @@ if uploaded_resume:
 
 #-----------Chatbot-----------------
 
-# ---------------- Chatbot with ML Career Prediction & Fuzzy Skill Matching ----------------
-
-st.header("🤖 Chatbot Assistant")
-
 
 # Small curated skills fallback
 skills_fallback = {

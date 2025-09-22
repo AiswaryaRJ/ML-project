@@ -707,11 +707,6 @@ career_courses = {
 
 key_map = {k.strip().lower(): k for k in career_info.keys()}
 
-# ---------------- Cached Career Prediction ----------------
-@st.cache_data(show_spinner=False)
-def cached_predict(text):
-    return predict_career(text)
-
 # ---------------- Cached TF-IDF & Career Vectors ----------------
 @st.cache_resource
 def get_tfidf_and_vectors(career_info_dict):
@@ -726,23 +721,15 @@ def get_tfidf_and_vectors(career_info_dict):
 
 tfidf, career_matrix, career_names = get_tfidf_and_vectors(career_info)
 
-
-def predict_top3(user_input, top_n=3, use_embeddings=False):
-    # Preprocess
-    cleaned_input = preprocess_text(user_input)
-    cleaned_input = correct_typo(cleaned_input)
-
-    # Feature extraction
-    if use_embeddings:
-        X_input = embedding_model.encode([cleaned_input])
-    else:
-        X_input = vectorizer.transform([cleaned_input])
-
-    # Predict probabilities
-    probs = model.predict_proba(X_input)[0]
-    top_indices = np.argsort(probs)[::-1][:top_n]
-    results = [(model.classes_[i], round(probs[i]*100, 2)) for i in top_indices]
-    return results
+# ---------------- Single Input Prediction ----------------
+st.subheader("Career Prediction (Single Input)")
+user_input = st.text_input("Describe your interests/skills:")
+if user_input:
+    top_predictions = predict_top3(user_input)
+    st.subheader("Top Career Suggestions:")
+    for career, prob in top_predictions:
+        st.write(f"{career}: {prob}%")
+        
 
 # ---------------- Multi-Interest Career Suggestions ----------------
 sample_examples = [

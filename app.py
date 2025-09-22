@@ -1585,7 +1585,7 @@ skills_fallback = {
         "Motivation",
         "Creativity",
         "Communication",
-        "Energy and stamina"],
+        "Energy and stamina"
     ],
     "dancing": [  # optional
         "Rhythm",

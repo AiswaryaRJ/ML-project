@@ -842,6 +842,14 @@ st.subheader("Select multiple interests (up to 5)")
 selected = st.multiselect("Choose:", options=sample_examples, max_selections=5)
 k_multi = st.slider("How many multi-interest suggestions?", 1, 5, 3)
 
+
+# Career alias mapping to match career_info with career_courses
+career_map = {
+    "Teacher / Educator": "Teacher",
+    "Software Engineer / Developer": "Software Engineer",
+    # Add other aliases as needed
+}
+
 if st.button("Suggest careers"):
     if not selected:
         st.warning("Select at least one interest.")
@@ -860,7 +868,9 @@ if st.button("Suggest careers"):
                 st.write("**Next Steps:**")
                 for step in info["next_steps"]:
                     st.write(f"- {step}")
-            courses = career_courses.get(career, [])
+            # Map career to correct key in career_courses
+            mapped_career = career_map.get(career, career)
+            courses = career_courses.get(mapped_career, [])
             if courses:
                 st.markdown(f"### Recommended courses for {career}:")
                 for course_name, course_link in courses:
@@ -877,8 +887,24 @@ if uploaded_file:
         if "description" not in df_csv.columns:
             st.error("CSV must contain 'description' column.")
         else:
-            df_csv['Top3_Predictions'] = df_csv['description'].apply(lambda x: predict_top3(x))
+            # Apply cached_predict to get predictions
+            df_csv['LogReg_Predicted'] = df_csv['description'].apply(lambda x: cached_predict(x)['LogisticRegression']['career'])
+            df_csv['RF_Predicted'] = df_csv['description'].apply(lambda x: cached_predict(x)['RandomForest']['career'])
+            
+            # Map predicted careers to correct keys in career_courses
+            career_map = {
+                "Teacher / Educator": "Teacher",
+                "Software Engineer / Developer": "Software Engineer",
+                # Add other aliases as needed
+            }
+
+            df_csv['Mapped_LogReg'] = df_csv['LogReg_Predicted'].apply(lambda x: career_map.get(x, x))
+            df_csv['Mapped_RF'] = df_csv['RF_Predicted'].apply(lambda x: career_map.get(x, x))
+
+            # Optionally, show the mapped careers for clarity
+            st.write("### Bulk Predictions with Mapped Careers")
             st.dataframe(df_csv)
+
     except Exception as e:
         st.error(f"Error reading CSV: {e}")
 

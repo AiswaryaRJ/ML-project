@@ -1639,7 +1639,7 @@ skills_fallback = {
 all_careers_skills = {**{k.lower(): v for k, v in skills_fallback.items()},
                       **{k.lower(): v.get("next_steps", []) for k, v in career_info.items()}}
 
-phrase_career_map = {
+phrase_career_map = ({
     "i like dancing": "Dance Fitness Instructor",
     "i enjoy dancing": "Dance Fitness Instructor",
     "i love dancing": "Dance Fitness Instructor",
@@ -1649,7 +1649,14 @@ phrase_career_map = {
     "i want to become a doctor": "Doctor",
     "i want to be a doctor": "Doctor",
     "i want to be a nurse": "Nurse",
-}
+    "top paying jobs in data science": "Data Scientist",
+    "best career in ai": "AI Engineer",
+    "careers in cybersecurity": "Cybersecurity Analyst",
+    "high salary tech jobs": "Software Engineer",
+    "i love drawing": "Graphic Designer",
+    "i like helping people": "Social Worker"
+
+})
 
 # ---------------- Helper Functions -----------------
 def normalize_text(text):
@@ -1699,9 +1706,14 @@ def fuzzy_match_skill(query, threshold=70):
 
 # ---------------- ML Prediction Placeholder -----------------
 def predict_top3_careers(query):
-    # Replace with your ML model
-    return [("Doctor", 0.9), ("Nurse", 0.6), ("Software Engineer", 0.3)]
-
+    # Dummy model replacement - refine based on query keywords
+    q = query.lower()
+    if "data science" in q or "ai" in q:
+        return [("Data Scientist", 0.95), ("ML Engineer", 0.85), ("AI Researcher", 0.8)]
+    elif "health" in q or "doctor" in q:
+        return [("Doctor", 0.9), ("Nurse", 0.8), ("Medical Researcher", 0.7)]
+    else:
+        return [("Software Engineer", 0.9), ("Product Manager", 0.7), ("UX Designer", 0.6)]
 # ---------------- OpenAI GPT Fallback -----------------
 openai.api_key = st.secrets.get("OPENAI_API_KEY", "")  # Add in Streamlit secrets
 
@@ -1766,10 +1778,11 @@ def get_answer(query):
     if duck:
         return duck
 
-    # 6️⃣ OpenAI fallback
-    gpt_ans = openai_fallback(query)
-    if gpt_ans:
-        return gpt_ans
+    # ---------------- OpenAI GPT Fallback -----------------
+openai_key = st.secrets.get("OPENAI_API_KEY", "")
+if not openai_key:
+    st.warning("⚠️ OpenAI API key missing. Add it to `.streamlit/secrets.toml`.")
+openai.api_key = openai_key
 
     # 7️⃣ Default
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
@@ -1816,7 +1829,11 @@ else:
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.session_state.just_cleared = True
-    st.experimental_rerun()
+    try:
+        # st.experimental_rerun() is deprecated in newer Streamlit versions
+        st.rerun()
+    except:
+        st.experimental_rerun()
 
 # Confirmation message after clearing
 if st.session_state.just_cleared:

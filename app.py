@@ -1002,10 +1002,12 @@ if uploaded_resume:
 # ----------------- Session State -----------------
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-
+if "just_cleared" not in st.session_state:
+    st.session_state.just_cleared = False
 if "learned_careers" not in st.session_state:
     st.session_state.learned_careers = {}
-  
+
+
 # Small curated skills fallback
 skills_fallback = {
     # ---------- IT & Technical ----------
@@ -1658,6 +1660,7 @@ phrase_career_map = {
     "i like helping people": "Social Worker"
 }
 
+
 # ---------------- Helper Functions -----------------
 def normalize_text(text):
     return text.lower().strip()
@@ -1706,28 +1709,20 @@ def fuzzy_match_skill(query, threshold=70):
 
 # ---------------- ML Prediction Placeholder -----------------
 def predict_top3_careers(query):
-    q = query.lower()
-    if "data science" in q or "ai" in q:
-        return [("Data Scientist", 0.95), ("ML Engineer", 0.85), ("AI Researcher", 0.8)]
-    elif "health" in q or "doctor" in q:
-        return [("Doctor", 0.9), ("Nurse", 0.8), ("Medical Researcher", 0.7)]
-    else:
-        return [("Software Engineer", 0.9), ("Product Manager", 0.7), ("UX Designer", 0.6)]
+    # Replace this with actual ML model prediction
+    return [("Doctor", 0.9), ("Nurse", 0.6), ("Software Engineer", 0.3)]
 
 # ---------------- OpenAI GPT Fallback -----------------
-openai_key = st.secrets.get("OPENAI_API_KEY", "")
-if not openai_key:
-    st.warning("⚠️ OpenAI API key missing. Add it to `.streamlit/secrets.toml`.")
-openai.api_key = openai_key
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 def openai_fallback(query):
-    if not openai_key:
-        return None
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "system", "content": "You are a career advisor assistant."},
-                      {"role": "user", "content": query}],
+            messages=[
+                {"role": "system", "content": "You are a career advisor assistant."},
+                {"role": "user", "content": query}
+            ],
             max_tokens=250
         )
         return response.choices[0].message.content
@@ -1738,7 +1733,7 @@ def openai_fallback(query):
 def get_answer(query):
     query_norm = normalize_text(query)
 
-    # 0️⃣ Phrase mapping
+    # Phrase mapping first
     for phrase, career in phrase_career_map.items():
         if phrase in query_norm:
             skills = all_careers_skills.get(career.lower(), [])
@@ -1747,8 +1742,8 @@ def get_answer(query):
                 result += "**Skills / Next Steps:**\n" + "\n".join(f"- {s}" for s in skills)
             return result
 
-    # 1️⃣ Learned phrases
-    for phrase, career in st.session_state.get("learned_careers", {}).items():
+    # Learned phrases
+    for phrase, career in st.session_state.learned_careers.items():
         if phrase in query_norm:
             skills = all_careers_skills.get(career.lower(), [])
             result = f"💼 Suggested Career (learned): {career}\n"
@@ -1756,8 +1751,8 @@ def get_answer(query):
                 result += "**Skills / Next Steps:**\n" + "\n".join(f"- {s}" for s in skills)
             return result
 
-    # 2️⃣ Career keywords ML prediction
-    career_keywords = ["career","job","suit me","suggest","profession","best","future","top paying","high salary"]
+    # Career keyword ML prediction
+    career_keywords = ["career","job","suit me","suggest","profession","best","future"]
     if any(k in query_norm for k in career_keywords):
         top3 = predict_top3_careers(query)
         result = "💼 Top career suggestions based on your input:\n"
@@ -1768,57 +1763,49 @@ def get_answer(query):
                 result += "  **Skills / Next Steps:**\n" + "\n".join(f"    - {s}" for s in skills)
         return result
 
-    # 3️⃣ Fuzzy match
+    # Fuzzy match
     match, skills = fuzzy_match_skill(query)
     if match:
         return f"💡 Key skills / next steps for {match.title()}:\n- " + "\n- ".join(skills)
 
-    # 4️⃣ Wikipedia fallback
+    # Wikipedia fallback
     wiki = get_wiki_summary(query)
     if wiki:
         return wiki
 
-    # 5️⃣ DuckDuckGo fallback
+    # DuckDuckGo fallback
     duck = fetch_from_duckduckgo(query)
     if duck:
         return duck
 
-    # 6️⃣ OpenAI fallback
+    # OpenAI fallback
     gpt_ans = openai_fallback(query)
     if gpt_ans:
         return gpt_ans
 
-    # 7️⃣ Default
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# ----------------- Streamlit UI for Chatbot -----------------
+# ---------------- Streamlit UI -----------------
 st.title("🤖 Chatbot Assistant")
 st.write("Ask me about careers, skills, trending jobs, or any topic:")
-
-# Initialize chat history
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "just_cleared" not in st.session_state:
-    st.session_state.just_cleared = False
 
 # User input
 user_query = st.text_input("💬 Your question:")
 
-# Process user query
 if user_query:
     answer = get_answer(user_query)
     st.session_state.chat_history.insert(0, (user_query, answer))
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[:10]
 
-# Latest answer display
+# Latest answer
 if st.session_state.chat_history:
     st.subheader("🧠 Latest Answer")
     latest_q, latest_a = st.session_state.chat_history[0]
     st.markdown(f"**You:** {latest_q}")
     st.markdown(f"**Bot:** {latest_a}")
 
-# Divider for previous chats
+# Previous chats
 st.markdown("---")
 st.subheader("💬 Previous Chats")
 if len(st.session_state.chat_history) > 1:
@@ -1828,14 +1815,11 @@ if len(st.session_state.chat_history) > 1:
 else:
     st.write("_No previous chats yet._")
 
-# Clear chat button with safe rerun
+# Clear chat
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.session_state.just_cleared = True
-    try:
-        st.rerun()  # New API for rerun
-    except:
-        st.experimental_rerun()
+    st.experimental_rerun()
 
 if st.session_state.just_cleared:
     st.session_state.just_cleared = False

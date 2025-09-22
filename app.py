@@ -33,6 +33,7 @@ st.caption("Describe your interests/skills and get career suggestions, courses, 
 # ---------------- NLP Setup ----------------
 nltk.download('stopwords')
 nltk.download('wordnet')
+nltk.download('omw-1.4')
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 
@@ -1586,30 +1587,14 @@ skills_fallback = {
     
 }
 
-# ---------------- Fuzzy Matching & Career Skills ----------------
-all_careers_skills = {**{k.lower(): v for k, v in skills_fallback.items()},
-                      **{k.lower(): v.get("next_steps", []) for k, v in career_info.items()}}
 
+# ---------- Helper Functions ----------
 def normalize_text(text):
-    return text.lower().strip()
+    text = text.lower().strip()
+    words = text.split()
+    words = [lemmatizer.lemmatize(w) for w in words]  # lemmatize each word
+    return " ".join(words)
 
-def fuzzy_match_skill(query, threshold=70):
-    query_norm = normalize_text(query)
-    match, score = process.extractOne(query_norm, all_careers_skills.keys())
-    if score >= threshold:
-        return match, all_careers_skills[match]
-    return None, None
-
-# ---------------- ML Career Prediction ----------------
-def predict_top3_careers(query):
-    query_vec = vectorizer.transform([query])  # or embedding_model.encode([query])
-    probs = model.predict_proba(query_vec)[0]
-    classes = model.classes_
-    top_idx = np.argsort(probs)[::-1][:3]
-    top3 = [(classes[i], probs[i]) for i in top_idx]
-    return top3
-
-# ---------------- Wikipedia & DuckDuckGo Fallback ----------------
 def fetch_from_duckduckgo(query):
     try:
         url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
@@ -1620,7 +1605,7 @@ def fetch_from_duckduckgo(query):
             for topic in r["RelatedTopics"]:
                 if isinstance(topic, dict) and topic.get("Text"):
                     return topic["Text"]
-    except Exception:
+    except:
         return None
     return None
 
@@ -1646,9 +1631,30 @@ def get_wiki_summary(query):
         return None
     return None
 
-# ---------------- Main Answer Function ----------------
+# ---------- Combine skills dictionaries ----------
+# career_info should already exist with next_steps for careers
+all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()},
+                      **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}}
+
+def fuzzy_match_skill(query, threshold=70):
+    query_norm = normalize_text(query)
+    match, score = process.extractOne(query_norm, all_careers_skills.keys())
+    if score >= threshold:
+        return match, all_careers_skills[match]
+    return None, None
+
+# ---------- ML Career Prediction ----------
+def predict_top3_careers(query):
+    query_vec = vectorizer.transform([query])  # or embedding_model.encode([query])
+    probs = model.predict_proba(query_vec)[0]
+    classes = model.classes_
+    top_idx = np.argsort(probs)[::-1][:3]
+    top3 = [(classes[i], probs[i]) for i in top_idx]
+    return top3
+
+# ---------- Main Answer Function ----------
 def get_answer(query):
-    # Career prediction request
+    # 1️⃣ Career prediction request
     career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
     if any(k in query.lower() for k in career_keywords):
         top3 = predict_top3_careers(query)
@@ -1662,25 +1668,28 @@ def get_answer(query):
                     result += f"    - {s}\n"
         return result
 
-    # Fuzzy match skills/careers
+    # 2️⃣ Fuzzy match skills/careers
     match, skills = fuzzy_match_skill(query)
     if match:
         return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
 
-    # Wikipedia fallback
+    # 3️⃣ Wikipedia fallback
     wiki = get_wiki_summary(query)
     if wiki:
         return wiki
 
-    # DuckDuckGo fallback
+    # 4️⃣ DuckDuckGo fallback
     duck = fetch_from_duckduckgo(query)
     if duck:
         return duck
 
-    # Default response
+    # 5️⃣ Default response
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# ---------------- Streamlit UI ----------------
+# ---------- Streamlit UI ----------
+st.header("🤖 Chatbot Assistant")
+
+# Initialize session state
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 

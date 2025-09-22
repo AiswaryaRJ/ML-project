@@ -1026,20 +1026,97 @@ def get_wiki_summary(query):
 
 # Small curated skills fallback
 skills_fallback = {
-    "dancer": [
-        "Strong sense of rhythm and musicality",
-        "Physical strength, flexibility, and stamina",
-        "Ability to memorize choreography quickly",
-        "Expressiveness and stage presence",
-        "Collaboration and discipline for rehearsals"
-    ],
-    "musician": [
-        "Mastery of a primary instrument or vocals",
-        "Understanding of music theory and composition",
-        "Collaboration and teamwork with other artists",
-        "Stage presence and confidence",
-        "Basic audio production and recording knowledge"
-    ]
+    # ---------- IT & Technical ----------
+    "software engineer": ["Proficiency in programming languages like Python, Java, or C++", "Knowledge of data structures and algorithms", "Experience with software development lifecycle", "Problem-solving and debugging skills", "Collaboration and version control (Git)"],
+    "data scientist": ["Strong statistics and probability knowledge", "Experience with Python/R and ML libraries", "Data visualization skills (Matplotlib, Seaborn, Tableau)", "Feature engineering and data cleaning", "Ability to communicate insights effectively"],
+    "ai/ml engineer": ["Experience with ML/DL frameworks (TensorFlow, PyTorch)", "Knowledge of neural networks and model architectures", "Data preprocessing and feature selection", "Hyperparameter tuning and model evaluation", "Deploying models and scalability considerations"],
+    "cybersecurity analyst": ["Knowledge of network security and protocols", "Threat detection and incident response skills", "Familiarity with security tools and firewalls", "Problem-solving and risk assessment", "Staying updated on emerging threats"],
+    "devops engineer": ["Experience with CI/CD pipelines", "Knowledge of cloud services (AWS, Azure, GCP)", "Containerization and orchestration (Docker, Kubernetes)", "Automation and scripting skills", "Monitoring and troubleshooting systems"],
+    "network engineer": ["Understanding of networking protocols (TCP/IP, DNS, etc.)", "Router/switch configuration and maintenance", "Network security and firewall knowledge", "Troubleshooting connectivity issues", "Documentation and network planning"],
+    "web developer": ["Proficiency in HTML, CSS, JavaScript", "Backend framework knowledge (Node.js, Django, Flask)", "Database management (SQL/NoSQL)", "Responsive design and UX principles", "Problem-solving and debugging"],
+    "mobile app developer": ["Proficiency in Android/iOS development", "Knowledge of Flutter or React Native", "Understanding of UI/UX design for apps", "Debugging and testing skills", "Integration with APIs and databases"],
+    "cloud architect": ["Cloud platform expertise (AWS, Azure, GCP)", "Infrastructure design and deployment", "Security and compliance knowledge", "Problem-solving and scalability planning", "Collaboration with development teams"],
+    "game developer": ["Proficiency in C++, C#, or Unity/Unreal Engine", "Knowledge of game physics and graphics", "Problem-solving and debugging", "Creativity in gameplay design", "Collaboration in multi-disciplinary teams"],
+
+    # ---------- Healthcare ----------
+    "doctor": ["Medical knowledge and diagnostic skills", "Patient care and empathy", "Problem-solving and critical thinking", "Time management under pressure", "Collaboration with healthcare teams"],
+    "nurse": ["Patient care and monitoring", "Medication administration and record-keeping", "Communication with patients and doctors", "Emergency response skills", "Compassion and empathy"],
+    "pharmacist": ["Knowledge of medications and interactions", "Prescription verification and dispensing", "Patient counseling skills", "Attention to detail", "Regulatory compliance knowledge"],
+    "physiotherapist": ["Knowledge of physical therapy techniques", "Patient assessment and treatment planning", "Manual therapy and exercise prescription", "Communication and empathy", "Monitoring progress and adapting treatments"],
+    "psychologist": ["Understanding of human behavior and mental health", "Counseling and active listening skills", "Analytical and research skills", "Empathy and ethical judgment", "Communication and interpersonal skills"],
+    "nutritionist": ["Knowledge of diet planning and nutrition science", "Ability to assess patient dietary needs", "Communication and counseling skills", "Research and evidence-based advice", "Adaptability to different client requirements"],
+    "lab technician": ["Sample collection and handling", "Knowledge of lab procedures and protocols", "Attention to detail and accuracy", "Analytical and observational skills", "Safety and hygiene compliance"],
+    "radiologist": ["Expertise in imaging techniques (X-ray, MRI, CT)", "Ability to interpret medical images", "Attention to detail", "Communication with healthcare teams", "Analytical and problem-solving skills"],
+    "dentist": ["Knowledge of dental procedures and oral health", "Patient care and communication", "Manual dexterity and precision", "Problem-solving for dental issues", "Knowledge of hygiene and safety protocols"],
+    "veterinarian": ["Animal care and medical knowledge", "Diagnosis and treatment skills", "Communication with pet owners", "Problem-solving and decision-making", "Empathy and patience"],
+
+    # ---------- Business & Finance ----------
+    "financial analyst": ["Financial modeling and analysis", "Knowledge of accounting and economics", "Excel and data visualization skills", "Critical thinking and problem-solving", "Communication and presentation skills"],
+    "accountant": ["Financial reporting and bookkeeping", "Knowledge of tax laws and compliance", "Attention to detail and accuracy", "Problem-solving and analytical skills", "Communication with clients and teams"],
+    "entrepreneur": ["Business planning and strategy", "Marketing and sales skills", "Financial management and budgeting", "Leadership and decision-making", "Networking and resilience"],
+    "marketing manager": ["Market research and strategy planning", "Brand management and promotion", "Team leadership and collaboration", "Communication and negotiation skills", "Analytics and campaign tracking"],
+    "sales executive": ["Client relationship management", "Negotiation and persuasion skills", "Product knowledge", "Communication and networking", "Goal orientation and resilience"],
+    "hr manager": ["Recruitment and talent acquisition", "Employee engagement and retention", "Conflict resolution and mediation", "Policy implementation and compliance", "Communication and organizational skills"],
+    "business analyst": ["Requirement gathering and documentation", "Process modeling and improvement", "Analytical and problem-solving skills", "Communication with stakeholders", "Knowledge of tools like Excel, SQL, Tableau"],
+    "project manager": ["Project planning and scheduling", "Risk management and mitigation", "Team leadership and delegation", "Budgeting and resource management", "Communication and reporting skills"],
+    "management consultant": ["Business strategy and problem-solving", "Analytical and research skills", "Communication and presentation", "Project management", "Stakeholder engagement and negotiation"],
+    "investment banker": ["Financial modeling and valuation", "Market research and analysis", "Client communication and negotiation", "Time management under pressure", "Analytical and decision-making skills"],
+
+    # ---------- Creative & Arts ----------
+    "actor": ["Acting and emotional expression", "Memorization and improvisation skills", "Stage or camera presence", "Collaboration with directors and cast", "Adaptability to roles and scripts"],
+    "singer": ["Vocal technique and control", "Performance and stage presence", "Music theory and rhythm understanding", "Collaboration with musicians and producers", "Consistency in practice and performance"],
+    "dancer": ["Strong sense of rhythm and musicality", "Physical strength, flexibility, and stamina", "Ability to memorize choreography quickly", "Expressiveness and stage presence", "Collaboration and discipline for rehearsals"],
+    "musician": ["Mastery of a primary instrument or vocals", "Understanding of music theory and composition", "Collaboration and teamwork with other artists", "Stage presence and confidence", "Basic audio production and recording knowledge"],
+    "photographer": ["Technical camera operation skills", "Composition and lighting knowledge", "Photo editing and post-processing", "Creativity and artistic vision", "Patience and attention to detail"],
+    "graphic designer": ["Proficiency in Photoshop, Illustrator, or Canva", "Creativity and visual storytelling", "Typography and color theory knowledge", "Branding and layout design", "Collaboration and time management"],
+    "fashion designer": ["Creativity and trend awareness", "Sketching and garment design", "Fabric and material knowledge", "Pattern making and sewing skills", "Collaboration and presentation"],
+    "interior designer": ["Spatial planning and creativity", "Knowledge of materials and furniture", "CAD and 3D modeling skills", "Client communication and customization", "Attention to detail and aesthetics"],
+    "chef": ["Food preparation and cooking techniques", "Creativity in recipe development", "Kitchen management and hygiene", "Time management under pressure", "Teamwork and leadership"],
+    "writer": ["Strong writing and grammar skills", "Creativity and storytelling ability", "Research and analytical skills", "Editing and proofreading", "Discipline and time management"],
+
+    # ---------- Education ----------
+    "teacher": ["Lesson planning and curriculum development", "Effective communication and explanation", "Classroom management and discipline", "Patience and adaptability", "Assessment and feedback skills"],
+    "professor": ["Expertise in subject matter", "Curriculum development and teaching", "Research and publication skills", "Communication and mentorship", "Analytical and critical thinking"],
+    "tutor": ["Subject knowledge and teaching skills", "Communication and patience", "Creating learning materials", "Assessment and feedback", "Adaptability to student needs"],
+    "librarian": ["Cataloging and organization skills", "Knowledge of library systems", "Research and reference skills", "Communication and assistance", "Attention to detail and information management"],
+    "educational counselor": ["Guidance and advising skills", "Understanding of career paths and education", "Communication and empathy", "Problem-solving and planning", "Analytical and organizational skills"],
+
+    # ---------- Law & Public Service ----------
+    "lawyer": ["Strong research and analytical skills", "Knowledge of legal frameworks and laws", "Negotiation and advocacy", "Critical thinking and argumentation", "Client communication and ethics"],
+    "judge": ["Legal knowledge and interpretation", "Decision-making and impartiality", "Analytical thinking and reasoning", "Communication and courtroom management", "Ethics and integrity"],
+    "police officer": ["Law enforcement knowledge", "Physical fitness and self-defense", "Problem-solving and decision-making", "Communication and investigation skills", "Ethics and integrity"],
+    "civil services officer": ["Leadership and public administration", "Policy analysis and decision-making", "Problem-solving and crisis management", "Effective communication", "Ethical judgment and integrity"],
+    "firefighter": ["Fire safety and emergency response", "Physical fitness and teamwork", "Problem-solving under pressure", "Communication and quick decision-making", "Courage and resilience"],
+
+    # ---------- Sports & Fitness ----------
+    "sports coach": ["Knowledge of sports rules and techniques", "Team management and motivation", "Strategy planning and game analysis", "Physical training and conditioning", "Communication and leadership"],
+    "fitness trainer": ["Knowledge of exercise techniques and programs", "Ability to motivate clients", "Nutrition and wellness guidance", "Communication and interpersonal skills", "Monitoring progress and adjustments"],
+    "yoga instructor": ["Expertise in yoga postures and breathing techniques", "Guiding and motivating students", "Knowledge of anatomy and safety", "Communication and patience", "Adaptability to student needs"],
+    "athlete": ["Physical fitness and endurance", "Discipline and training routine", "Strategic thinking for performance", "Teamwork and collaboration (if team sport)", "Focus and mental toughness"],
+
+    # ---------- Service & Trades ----------
+    "chef": ["Food preparation and cooking", "Creativity in recipes", "Time management", "Teamwork and coordination", "Kitchen hygiene and safety"],
+    "barber": ["Hair cutting and styling skills", "Customer service and communication", "Attention to detail", "Creativity and trend awareness", "Time management"],
+    "cosmetologist": ["Skincare, makeup, and hair treatment knowledge", "Customer service and communication", "Creativity and trend awareness", "Attention to hygiene and safety", "Time management"],
+    "electrician": ["Knowledge of electrical systems", "Safety protocols", "Problem-solving and troubleshooting", "Technical skill with wiring and tools", "Attention to detail"],
+    "plumber": ["Plumbing repair and installation skills", "Problem-solving and troubleshooting", "Knowledge of tools and materials", "Safety awareness", "Time management"],
+    "mechanic": ["Vehicle repair and diagnostics", "Problem-solving skills", "Technical knowledge of engines", "Attention to detail", "Safety and efficiency"],
+    "carpenter": ["Woodworking and furniture making", "Technical knowledge of materials and tools", "Attention to detail", "Creativity and design skills", "Time management"],
+    "painter": ["Painting and finishing skills", "Knowledge of colors and techniques", "Attention to detail", "Creativity and precision", "Time management"],
+    "driver": ["Safe driving skills", "Vehicle maintenance knowledge", "Time management and punctuality", "Navigation and route planning", "Attention and alertness"],
+
+    # ---------- Aviation ----------
+    "pilot": ["Aircraft operation knowledge", "Navigation and communication skills", "Decision-making under pressure", "Physical and mental fitness", "Attention to safety protocols"],
+    "air traffic controller": ["Airspace monitoring", "Quick decision-making", "Communication with pilots", "Problem-solving under stress", "Attention to detail"],
+
+    # ---------- Miscellaneous / Niche ----------
+    "photographer": ["Camera operation", "Lighting knowledge", "Editing skills", "Creativity", "Attention to detail"],
+    "journalist": ["Research and investigation", "Writing and reporting skills", "Communication", "Ethics and accuracy", "Time management"],
+    "translator": ["Proficiency in languages", "Writing and interpretation skills", "Cultural understanding", "Attention to detail", "Communication"],
+    "social worker": ["Empathy and listening", "Case management", "Problem-solving", "Communication", "Organizational skills"],
+    "event planner": ["Organization and planning", "Negotiation and communication", "Budgeting and logistics", "Creativity", "Problem-solving"],
+    "travel guide": ["Knowledge of history and culture", "Communication skills", "Navigation and planning", "Customer service", "Adaptability"],
+    "journalist": ["Research and investigation", "Writing and reporting skills", "Communication", "Ethics and accuracy", "Time management"]
 }
 
 # Career prediction using top-3 ML model

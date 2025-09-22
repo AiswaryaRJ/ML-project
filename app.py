@@ -1001,51 +1001,6 @@ if uploaded_resume:
 
 st.header("🤖 Chatbot Assistant")
 
-# ---------- Helper Functions ----------
-
-def normalize_text(text):
-    return re.sub(r'[^\w\s]', '', text.lower().strip())
-
-def fetch_from_duckduckgo(query):
-    try:
-        url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
-        r = requests.get(url, timeout=5).json()
-        if r.get("AbstractText"):
-            return r["AbstractText"]
-        if r.get("RelatedTopics"):
-            for topic in r["RelatedTopics"]:
-                if isinstance(topic, dict) and topic.get("Text"):
-                    return topic["Text"]
-    except Exception:
-        return None
-    return None
-
-def get_wiki_summary(query):
-    try:
-        search_results = wikipedia.search(query)
-        if not search_results:
-            return None
-        best_page, best_score = None, 0
-        for title in search_results[:7]:
-            try:
-                page = wikipedia.page(title)
-                score = SequenceMatcher(None, query.lower(), page.summary.lower()).ratio()
-                if score > best_score:
-                    best_score, best_page = score, page
-            except:
-                continue
-        if best_page and best_score > 0.35:
-            text = best_page.summary.strip()
-            sentences = text.split(". ")
-            return ". ".join(sentences[:5]) + "."
-    except:
-        return None
-    return None
-
-# ---------- Fuzzy Matching ----------
-# Merge skills_fallback and career_info into a single lowercase dictionary
-
-# ---------- Skills 
 
 # Small curated skills fallback
 skills_fallback = {
@@ -1631,24 +1586,21 @@ skills_fallback = {
     
 }
 
-# Ensure keys are all lowercase for consistency
-all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()},
-                      **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}}
+# ---------------- Fuzzy Matching & Career Skills ----------------
+all_careers_skills = {**{k.lower(): v for k, v in skills_fallback.items()},
+                      **{k.lower(): v.get("next_steps", []) for k, v in career_info.items()}}
+
+def normalize_text(text):
+    return text.lower().strip()
 
 def fuzzy_match_skill(query, threshold=70):
     query_norm = normalize_text(query)
-    # Full query match
     match, score = process.extractOne(query_norm, all_careers_skills.keys())
     if score >= threshold:
         return match, all_careers_skills[match]
-    # Check individual words if full query fails
-    for word in query_norm.split():
-        match, score = process.extractOne(word, all_careers_skills.keys())
-        if score >= threshold:
-            return match, all_careers_skills[match]
     return None, None
 
-# ---------- ML Career Prediction ----------
+# ---------------- ML Career Prediction ----------------
 def predict_top3_careers(query):
     query_vec = vectorizer.transform([query])  # or embedding_model.encode([query])
     probs = model.predict_proba(query_vec)[0]
@@ -1657,9 +1609,46 @@ def predict_top3_careers(query):
     top3 = [(classes[i], probs[i]) for i in top_idx]
     return top3
 
-# ---------- Main Answer Function ----------
+# ---------------- Wikipedia & DuckDuckGo Fallback ----------------
+def fetch_from_duckduckgo(query):
+    try:
+        url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
+        r = requests.get(url, timeout=5).json()
+        if r.get("AbstractText"):
+            return r["AbstractText"]
+        if r.get("RelatedTopics"):
+            for topic in r["RelatedTopics"]:
+                if isinstance(topic, dict) and topic.get("Text"):
+                    return topic["Text"]
+    except Exception:
+        return None
+    return None
+
+def get_wiki_summary(query):
+    try:
+        search_results = wikipedia.search(query)
+        if not search_results:
+            return None
+        best_page, best_score = None, 0
+        for title in search_results[:7]:
+            try:
+                page = wikipedia.page(title)
+                score = SequenceMatcher(None, query.lower(), page.summary.lower()).ratio()
+                if score > best_score:
+                    best_score, best_page = score, page
+            except:
+                continue
+        if best_page and best_score > 0.35:
+            text = best_page.summary.strip()
+            sentences = text.split(". ")
+            return ". ".join(sentences[:5]) + "."
+    except:
+        return None
+    return None
+
+# ---------------- Main Answer Function ----------------
 def get_answer(query):
-    # 1️⃣ Career prediction request
+    # Career prediction request
     career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
     if any(k in query.lower() for k in career_keywords):
         top3 = predict_top3_careers(query)
@@ -1673,27 +1662,27 @@ def get_answer(query):
                     result += f"    - {s}\n"
         return result
 
-    # 2️⃣ Fuzzy match skills/careers
+    # Fuzzy match skills/careers
     match, skills = fuzzy_match_skill(query)
     if match:
         return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
 
-    # 3️⃣ Wikipedia fallback
+    # Wikipedia fallback
     wiki = get_wiki_summary(query)
     if wiki:
         return wiki
 
-    # 4️⃣ DuckDuckGo fallback
+    # DuckDuckGo fallback
     duck = fetch_from_duckduckgo(query)
     if duck:
         return duck
 
-    # 5️⃣ Default response
+    # Default response
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# ---------- Streamlit UI ----------
+# ---------------- Streamlit UI ----------------
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []  # stores (question, answer)
+    st.session_state.chat_history = []
 
 user_query = st.text_input("Ask me about careers, skills, or any topic:")
 

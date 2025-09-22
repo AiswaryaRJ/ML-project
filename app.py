@@ -1579,8 +1579,20 @@ skills_fallback = {
     "drone photographer": ["Drone handling", "Photography", "Creativity", "Safety awareness"],
     "fitness influencer": ["Social media", "Creativity", "Motivation", "Communication"],
     "social media manager": ["Content creation", "Planning", "Communication", "Analytics"],
-    "startup mentor": ["Guidance", "Communication", "Experience", "Problem-solving"]
-    
+    "startup mentor": ["Guidance", "Communication", "Experience", "Problem-solving"],
+    "dance": [  # add a simpler key to catch "dance" or "dancing"
+        "Rhythm",
+        "Motivation",
+        "Creativity",
+        "Communication",
+        "Energy and stamina"],
+    ],
+    "dancing": [  # optional
+        "Rhythm",
+        "Motivation",
+        "Creativity",
+        "Communication",
+        "Energy and stamina"]
 }
 
 

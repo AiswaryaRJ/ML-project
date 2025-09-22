@@ -979,10 +979,16 @@ if uploaded_resume:
 
 #-----------Chatbot-----------------
 
+# ---------------- Chatbot with ML Career Prediction ----------------
 
-# ---------- Improved Answer Retrieval ----------
+st.header("🤖 Chatbot Assistant")
+
+# Initialize session state
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []  # stores tuples: (question, answer)
+
+# ---------- Helper Functions ----------
 def fetch_from_duckduckgo(query):
-    """Fallback search using DuckDuckGo Instant Answer API."""
     try:
         url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
         r = requests.get(url, timeout=5).json()
@@ -1012,14 +1018,13 @@ def get_wiki_summary(query):
                 continue
         if best_page and best_score > 0.35:
             text = best_page.summary.strip()
-            # Take first 4-5 sentences for context
             sentences = text.split(". ")
             return ". ".join(sentences[:5]) + "."
     except:
         return None
     return None
 
-# Small knowledge base for common skills
+# Small curated skills fallback
 skills_fallback = {
     "dancer": [
         "Strong sense of rhythm and musicality",
@@ -1037,67 +1042,88 @@ skills_fallback = {
     ]
 }
 
+# Career prediction using top-3 ML model
+def predict_top3_careers(query):
+    # Preprocess query (optional if using embeddings)
+    query_vec = vectorizer.transform([query])  # or embedding_model.encode([query]) if using embeddings
+    probs = model.predict_proba(query_vec)[0]  # works for multi-class classifier
+    classes = model.classes_
+    top_idx = np.argsort(probs)[::-1][:3]
+    top3 = [(classes[i], probs[i]) for i in top_idx]
+    return top3
+
+def get_career_skills(query):
+    for career in career_info.keys():
+        if career.lower() in query.lower():
+            info = career_info[career]
+            skills = info.get("next_steps", [])
+            if skills:
+                return f"💡 **Skills / next steps for {career}:**\n- " + "\n- ".join(skills)
+    return None
+
+# Main answer function with career prediction integration
 def get_answer(query):
-    # Check curated skills first
+    # Check if user is asking for career advice
+    career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
+    if any(k in query.lower() for k in career_keywords):
+        top3 = predict_top3_careers(query)
+        result = "💼 **Top 3 career suggestions based on your input:**\n"
+        for career, prob in top3:
+            result += f"- {career} (confidence: {prob*100:.1f}%)\n"
+        return result
+
+    # Career-specific info fallback
+    career_skills = get_career_skills(query)
+    if career_skills:
+        return career_skills
+
+    # Curated skills fallback
     for key, skills in skills_fallback.items():
         if key in query.lower():
             return f"💡 **Key skills for {key.title()}:**\n- " + "\n- ".join(skills)
-    # Try Wikipedia
+
+    # Wikipedia fallback
     wiki = get_wiki_summary(query)
     if wiki:
         return wiki
-    # Fallback: DuckDuckGo
+
+    # DuckDuckGo fallback
     duck = fetch_from_duckduckgo(query)
     if duck:
         return duck
+
+    # Default response
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
 # ---------- UI ----------
-st.header("🤖 Chatbot Assistant")
-
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []   # stores tuples: (question, answer)
-if "last_answer" not in st.session_state:
-    st.session_state.last_answer = None
-if "last_question" not in st.session_state:
-    st.session_state.last_question = None
-
 user_query = st.text_input("Ask me about careers, skills, or any topic:")
 
-# Handle new query
 if user_query:
-    # Move previous Q&A to history
-    if st.session_state.last_question and st.session_state.last_answer:
-        st.session_state.chat_history.insert(
-            0, (st.session_state.last_question, st.session_state.last_answer)
-        )
-    # Get new answer
     answer = get_answer(user_query)
-    st.session_state.last_question = user_query
-    st.session_state.last_answer = answer
+    st.session_state.chat_history.insert(0, (user_query, answer))
+    if len(st.session_state.chat_history) > 10:
+        st.session_state.chat_history = st.session_state.chat_history[:10]  # keep last 10
 
-# Show current answer under chatbot
-if st.session_state.last_answer:
-    st.markdown("### 🧠 Answer")
-    st.write(f"**You:** {st.session_state.last_question}")
-    st.write(f"**Bot:** {st.session_state.last_answer}")
+# Show latest answer
+if st.session_state.chat_history:
+    st.subheader("🧠 Latest Answer")
+    latest_q, latest_a = st.session_state.chat_history[0]
+    st.markdown(f"**You:** {latest_q}")
+    st.markdown(f"**Bot:** {latest_a}")
 
-# Divider + Chat History
+# Previous chats
 st.markdown("---")
 st.subheader("💬 Previous Chats")
-if st.session_state.chat_history:
-    for q, a in st.session_state.chat_history:
-        st.write(f"**You:** {q}")
-        st.write(f"**Bot:** {a}")
+if len(st.session_state.chat_history) > 1:
+    for q, a in st.session_state.chat_history[1:]:
+        st.markdown(f"**You:** {q}")
+        st.markdown(f"**Bot:** {a}")
 else:
     st.write("_No previous chats yet._")
 
-# Clear button
+# Clear chat button
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
-    st.session_state.last_answer = None
-    st.session_state.last_question = None
-    st.rerun()  # ✅ Use st.rerun() instead of st.experimental_rerun()
-
+    st.experimental_rerun()
 
 st.caption("💡 Tip: Ask about careers, skills, science, history, or any topic for detailed answers.")

@@ -1630,18 +1630,20 @@ skills_fallback = {
 
 }
 
-# Ensure all keys are lowercase for consistency
-all_careers_skills = {**{k.lower(): v for k,v in skills_fallback.items()}}
-# Add career_info if you have additional structured data
-# all_careers_skills.update({k.lower(): v.get("next_steps", []) for k,v in career_info.items()})
+# ----------------- Prepare Semantic Matching -----------------
+all_careers_skills = {
+    **{k.lower(): v for k,v in skills_fallback.items()},
+    **{k.lower(): v.get("next_steps", []) for k,v in career_info.items()}
+}
 
-# ------------------ Helper Functions ------------------
+# Initialize sentence transformer for embeddings
+semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
 
-def normalize_text(text):
-    return text.lower().strip()
+# Precompute career embeddings
+career_embeddings = semantic_model.encode(list(all_careers_skills.keys()), convert_to_tensor=True)
 
+# ----------------- Helper Functions -----------------
 def fetch_from_duckduckgo(query):
-    """Fallback search using DuckDuckGo Instant Answer API."""
     try:
         url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
         r = requests.get(url, timeout=5).json()
@@ -1651,7 +1653,7 @@ def fetch_from_duckduckgo(query):
             for topic in r["RelatedTopics"]:
                 if isinstance(topic, dict) and topic.get("Text"):
                     return topic["Text"]
-    except Exception:
+    except:
         return None
     return None
 
@@ -1670,121 +1672,80 @@ def get_wiki_summary(query):
             except:
                 continue
         if best_page and best_score > 0.35:
-            text = best_page.summary.strip()
-            sentences = text.split(". ")
+            sentences = best_page.summary.split(". ")
             return ". ".join(sentences[:5]) + "."
     except:
         return None
     return None
 
-def fuzzy_match_multiple_skills(query, threshold=70):
+def normalize_text(text):
+    return text.lower().strip()
+
+def fuzzy_match_skill(query, threshold=70):
     query_norm = normalize_text(query)
-    matched_careers = []
-    for career in all_careers_skills.keys():
-        score = SequenceMatcher(None, career, query_norm).ratio() * 100
-        if score >= threshold:
-            matched_careers.append((career, all_careers_skills[career]))
-    return matched_careers
+    match, score = process.extractOne(query_norm, all_careers_skills.keys(), scorer=fuzz.token_sort_ratio)
+    if score >= threshold:
+        return match, all_careers_skills[match]
+    return None, None
 
-# ------------------ GPT / AI Hybrid Placeholder ------------------
-def generate_answer(prompt):
-    """
-    Placeholder for GPT/FLAN-T5 / other ML-generated answer.
-    If not using GPT, this can be left empty or call a local model.
-    """
-    # Example static response for demonstration
-    return ""  # Leave blank to fallback on Wikipedia/DuckDuckGo
+def semantic_match(query, top_k=3):
+    query_vec = semantic_model.encode([query], convert_to_tensor=True)
+    scores = util.cos_sim(query_vec, career_embeddings)[0]
+    top_idx = scores.argsort(descending=True)[:top_k]
+    results = []
+    careers_list = list(all_careers_skills.keys())
+    for i in top_idx:
+        career = careers_list[i]
+        confidence = float(scores[i])
+        results.append((career, confidence, all_careers_skills[career]))
+    return results
 
-# ------------------ ML Career Prediction Placeholder ------------------
-def predict_top3_careers(query):
+# ----------------- Main Answer Function -----------------
+def get_answer(query):
     query_lower = query.lower()
-    # Simple keyword mapping to prioritize careers
-    keyword_map = {
-        "it": ["software engineer", "data scientist", "ai/ml engineer", "cybersecurity analyst", "devops engineer"],
-        "software": ["software engineer", "web developer", "mobile app developer", "cloud architect"],
-        "ai": ["ai/ml engineer", "data scientist"],
-        "tech": ["software engineer", "network engineer", "cloud architect"],
-        "health": ["doctor", "nurse", "pharmacist"],
-        "music": ["musician", "dance fitness instructor"],
-        "dance": ["dance fitness instructor"],
-        "finance": ["financial analyst", "investment banker", "accountant"],
-        "education": ["teacher", "professor", "curriculum designer"],
-        "creative": ["musician", "graphic designer", "photographer"]
-    }
 
-    # Find matching keywords
-    matched_careers = []
-    for k, careers in keyword_map.items():
-        if k in query_lower:
-            matched_careers.extend(careers)
-    
-    # If none matched, fallback to all careers
-    if not matched_careers:
-        matched_careers = list(all_careers_skills.keys())
-    
-    # Pick top 3 (or less if less available)
-    top3 = [(career.title(), np.random.rand()) for career in matched_careers[:3]]
-    return top3
-    
-# ------------------ Main Answer Function ------------------
-def get_hybrid_answer_multi(query):
-    # 1️⃣ Check multiple fuzzy matches first
-    matched_careers = fuzzy_match_multiple_skills(query)
-    if matched_careers:
-        result = ""
-        for career, skills in matched_careers:
-            result += f"💡 **Key skills / next steps for {career.title()}:**\n- " + "\n- ".join(skills) + "\n\n"
-        return result.strip()
-    
-    # 2️⃣ Career prediction if query implies career advice
-    career_keywords = ["career", "job", "suit me", "suggest", "what should i do", "profession"]
-    if any(k in query.lower() for k in career_keywords):
-        top3 = predict_top3_careers(query)
-        result = "💼 **Top 3 career suggestions based on your input:**\n"
-        for career, prob in top3:
-            skills = all_careers_skills.get(career.lower(), [])
-            result += f"- {career} (confidence: {prob*100:.1f}%)\n"
+    # 1️⃣ Career-specific phrases (like "I like dancing")
+    career_keywords = ["career", "job", "profession", "suit me", "suggest", "what should i do"]
+    if any(k in query_lower for k in career_keywords) or "i like" in query_lower or "i want" in query_lower:
+        matches = semantic_match(query)
+        result = "💼 **Top career suggestions based on your input:**\n"
+        for career, conf, skills in matches:
+            result += f"- {career.title()} (confidence: {conf*100:.1f}%)\n"
             if skills:
                 result += "  **Skills / Next Steps:**\n"
                 for s in skills:
                     result += f"    - {s}\n"
         return result
 
-    # 3️⃣ GPT / AI hybrid answer
-    prompt = f"You are a career guidance assistant. Provide detailed info for '{query}'."
-    answer = generate_answer(prompt)
+    # 2️⃣ Fuzzy match as fallback
+    match, skills = fuzzy_match_skill(query)
+    if match:
+        return f"💡 **Key skills / next steps for {match.title()}:**\n- " + "\n- ".join(skills)
 
-    # 4️⃣ Wikipedia fallback
-    if len(answer) < 20:
-        wiki = get_wiki_summary(query)
-        if wiki:
-            return wiki
+    # 3️⃣ Wikipedia fallback
+    wiki = get_wiki_summary(query)
+    if wiki:
+        return wiki
 
-    # 5️⃣ DuckDuckGo fallback
-    if len(answer) < 20:
-        duck = fetch_from_duckduckgo(query)
-        if duck:
-            return duck
+    # 4️⃣ DuckDuckGo fallback
+    duck = fetch_from_duckduckgo(query)
+    if duck:
+        return duck
 
-    # 6️⃣ Default
+    # 5️⃣ Default response
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
 
-# ------------------ Streamlit UI ------------------
-
+# ----------------- Streamlit UI -----------------
 st.header("🤖 Chatbot Assistant")
-
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []  # stores tuples: (question, answer)
-
 user_query = st.text_input("Ask me about careers, skills, or any topic:")
 
 if user_query:
-    answer = get_hybrid_answer_multi(user_query)
+    answer = get_answer(user_query)
     st.session_state.chat_history.insert(0, (user_query, answer))
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[:10]
 
-# Show latest answer
+# Latest answer
 if st.session_state.chat_history:
     st.subheader("🧠 Latest Answer")
     latest_q, latest_a = st.session_state.chat_history[0]
@@ -1806,4 +1767,4 @@ if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history.clear()
     st.experimental_rerun()
 
-st.caption("💡 Tip: Ask about careers, skills, science, history, or any topic for detailed answers.")
+st.caption("💡 Tip: Ask about careers, skills, education, trending jobs, or any topic for detailed answers.")

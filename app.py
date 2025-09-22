@@ -1,4 +1,6 @@
 # --------------------- Full Optimized app.py ---------------------
+
+# --------------------- Full Optimized app.py ---------------------
 import pandas as pd
 import numpy as np
 import difflib
@@ -9,60 +11,65 @@ from docx import Document
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from functools import lru_cache
+from fuzzywuzzy import process
+import pickle
+from sentence_transformers import SentenceTransformer
 
 from chatbot import get_response
 from recommender import recommend
-from predict_career import predict_career
 import streamlit as st
 import wikipedia
 import requests
 from difflib import SequenceMatcher
-
-# ---------------- Text Preprocessing & Typo Handling ----------------
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from fuzzywuzzy import process
-import re
-import pickle
-from sentence_transformers import SentenceTransformer
-import numpy as np
-
-nltk.download('stopwords')
-nltk.download('wordnet')
-
-lemmatizer = WordNetLemmatizer()
-stop_words = set(stopwords.words('english'))
-
-def preprocess_text(text):
-    text = text.lower()
-    text = re.sub(r'[^\w\s]', '', text)  # remove punctuation
-    words = [lemmatizer.lemmatize(word) for word in text.split() if word not in stop_words]
-    return ' '.join(words)
-    
-
-def correct_typo(text, choices=career_names, threshold=80):
-    match, score = process.extractOne(text, choices)
-    return match if score >= threshold else text
-
 
 # ---------------- Streamlit Page Settings ----------------
 st.set_page_config(page_title="Career Guidance AI", layout="centered")
 st.title("Career Guidance AI")
 st.caption("Describe your interests/skills and get career suggestions, courses, and chatbot help.")
 
-# ---------------- Load dataset ----------------
+# ---------------- NLP Setup ----------------
+nltk.download('stopwords')
+nltk.download('wordnet')
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+
+def preprocess_text(text):
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    words = [lemmatizer.lemmatize(word) for word in text.split() if word not in stop_words]
+    return ' '.join(words)
+
+# ---------------- Load Dataset ----------------
 df = pd.read_csv("generated_dataset.csv")
 career_names = df['Career'].unique()
 
-# Load trained ML model and vectorizer
+def correct_typo(text, choices=career_names, threshold=80):
+    match, score = process.extractOne(text, choices)
+    return match if score >= threshold else text
+
+# ---------------- Load ML Model & Embeddings ----------------
 with open("career_model.pkl", "rb") as f:
     model = pickle.load(f)
 with open("vectorizer.pkl", "rb") as f:
     vectorizer = pickle.load(f)
 
-# Optional: for sentence embeddings instead of TF-IDF
 embedding_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+
+# ---------------- Top-3 Career Prediction ----------------
+def predict_top3(user_input, top_n=3, use_embeddings=False):
+    cleaned_input = preprocess_text(user_input)
+    cleaned_input = correct_typo(cleaned_input)
+    if use_embeddings:
+        X_input = embedding_model.encode([cleaned_input])
+    else:
+        X_input = vectorizer.transform([cleaned_input])
+    probs = model.predict_proba(X_input)[0]
+    top_indices = np.argsort(probs)[::-1][:top_n]
+    results = [(model.classes_[i], round(probs[i]*100, 2)) for i in top_indices]
+    return results
 
 
 # ---------------- Career Info & Courses ----------------

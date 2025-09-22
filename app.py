@@ -1697,12 +1697,35 @@ def generate_answer(prompt):
 
 # ------------------ ML Career Prediction Placeholder ------------------
 def predict_top3_careers(query):
-    """
-    Placeholder function if you have a trained ML model.
-    """
-    # Return dummy values if no model yet
-    return [("Software Engineer", 0.85), ("Data Scientist", 0.75), ("AI/ML Engineer", 0.65)]
+    query_lower = query.lower()
+    # Simple keyword mapping to prioritize careers
+    keyword_map = {
+        "it": ["software engineer", "data scientist", "ai/ml engineer", "cybersecurity analyst", "devops engineer"],
+        "software": ["software engineer", "web developer", "mobile app developer", "cloud architect"],
+        "ai": ["ai/ml engineer", "data scientist"],
+        "tech": ["software engineer", "network engineer", "cloud architect"],
+        "health": ["doctor", "nurse", "pharmacist"],
+        "music": ["musician", "dance fitness instructor"],
+        "dance": ["dance fitness instructor"],
+        "finance": ["financial analyst", "investment banker", "accountant"],
+        "education": ["teacher", "professor", "curriculum designer"],
+        "creative": ["musician", "graphic designer", "photographer"]
+    }
 
+    # Find matching keywords
+    matched_careers = []
+    for k, careers in keyword_map.items():
+        if k in query_lower:
+            matched_careers.extend(careers)
+    
+    # If none matched, fallback to all careers
+    if not matched_careers:
+        matched_careers = list(all_careers_skills.keys())
+    
+    # Pick top 3 (or less if less available)
+    top3 = [(career.title(), np.random.rand()) for career in matched_careers[:3]]
+    return top3
+    
 # ------------------ Main Answer Function ------------------
 def get_hybrid_answer_multi(query):
     # 1️⃣ Check multiple fuzzy matches first

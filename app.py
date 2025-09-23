@@ -1067,8 +1067,7 @@ if uploaded_resume:
         overall_pct = round(overall * 100, 1)
         st.markdown(f"## Overall alignment score: **{overall_pct}%**")
 
-        # Downloadable report
-        report_lines
+        
 
 #-----------Chatbot-----------------
 # ----------------- Session State -----------------

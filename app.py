@@ -895,21 +895,62 @@ if st.button("Suggest careers"):
 # ---------------- Bulk CSV Predictions ----------------
 st.subheader("Bulk CSV Predictions")
 uploaded_file = st.file_uploader("Upload CSV with 'description' column", type=["csv"])
+
 if uploaded_file:
     try:
         df_csv = pd.read_csv(uploaded_file)
+
         if "description" not in df_csv.columns:
             st.error("CSV must contain 'description' column.")
         else:
-            # Apply cached_predict to get predictions
-            def simple_predict(text):
-                 X = vectorizer.transform([preprocess_text(text)])
-                 probs = model.predict_proba(X)[0]
-                 best_idx = np.argmax(probs)
-                 return model.classes_[best_idx]
 
-           df_csv['Predicted_Career'] = df_csv['description'].apply(simple_predict)
-            # Map predicted careers to correct keys in career_courses
+            # ---------------- Prediction Functions ----------------
+            def predict_logreg(text):
+                X = vectorizer.transform([preprocess_text(text)])
+                probs = model.predict_proba(X)[0]
+                best_idx = np.argmax(probs)
+                return model.classes_[best_idx]
+
+            def predict_rf(text):
+                # Replace with your RF model if available
+                return predict_logreg(text)  # fallback
+
+            def top_tfidf_careers_with_skills(text, top_n=3):
+                text_vec = tfidf.transform([text])
+                sims = cosine_similarity(text_vec, career_matrix)[0]
+                top_idx = sims.argsort()[::-1][:top_n]
+                results = []
+                for i in top_idx:
+                    career = career_names[i]
+                    similarity = sims[i] * 100
+                    skills = career_info.get(career, {}).get("next_steps", [])
+                    skills_text = "; ".join(skills) if skills else "No skills info"
+                    results.append((career, round(similarity, 2), skills_text))
+                return results
+
+            # ---------------- Apply Predictions ----------------
+            df_csv['LogReg_Predicted'] = df_csv['description'].apply(predict_logreg)
+            df_csv['RF_Predicted'] = df_csv['description'].apply(predict_rf)
+
+            # ---------------- TF-IDF top careers (optimized) ----------------
+            top_n = 3
+
+            def compute_top_careers(row):
+                top_careers = top_tfidf_careers_with_skills(row['description'], top_n=top_n)
+                for i in range(top_n):
+                    if len(top_careers) > i:
+                        row[f'Top_Career_{i+1}'] = top_careers[i][0]
+                        row[f'Top_Career_{i+1}_Similarity'] = top_careers[i][1]
+                        row[f'Top_Career_{i+1}_Skills'] = top_careers[i][2]
+                    else:
+                        row[f'Top_Career_{i+1}'] = ""
+                        row[f'Top_Career_{i+1}_Similarity'] = 0
+                        row[f'Top_Career_{i+1}_Skills'] = ""
+                return row
+
+            df_csv = df_csv.apply(compute_top_careers, axis=1)
+
+            # ---------------- Map predicted careers ----------------
             career_map = {
                 "Teacher / Educator": "Teacher",
                 "Software Engineer / Developer": "Software Engineer",
@@ -919,13 +960,22 @@ if uploaded_file:
             df_csv['Mapped_LogReg'] = df_csv['LogReg_Predicted'].apply(lambda x: career_map.get(x, x))
             df_csv['Mapped_RF'] = df_csv['RF_Predicted'].apply(lambda x: career_map.get(x, x))
 
-            # Optionally, show the mapped careers for clarity
-            st.write("### Bulk Predictions with Mapped Careers")
+            # ---------------- Display results ----------------
+            st.write("### Bulk Predictions with Mapped Careers & TF-IDF Suggestions")
             st.dataframe(df_csv)
+
+            # ---------------- Download CSV ----------------
+            csv_buffer = df_csv.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="📥 Download Predictions CSV",
+                data=csv_buffer,
+                file_name="career_predictions.csv",
+                mime="text/csv"
+            )
 
     except Exception as e:
         st.error(f"Error reading CSV: {e}")
-
+        
 # ---------------- Resume Analyzer ----------------
 st.subheader("📄 Resume Analyzer")
 st.info("Upload a PDF, DOCX, or TXT resume. Analyzer checks keyword coverage, sections, contact info, and career alignment.")

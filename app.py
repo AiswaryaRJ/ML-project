@@ -1782,8 +1782,8 @@ def fuzzy_match_skill(query, threshold=70):
 # ---------------- ML Prediction Placeholder -----------------
 
 # ---------------- OpenAI GPT Fallback -----------------
-openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 def openai_fallback(query):
     try:
         response = openai.ChatCompletion.create(

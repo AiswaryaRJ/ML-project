@@ -54,9 +54,7 @@ def correct_typo(text, choices=career_names, threshold=80):
     return match if score >= threshold else text
 
 # ---------------- Load ML Model & Embeddings ----------------
-# ---------------- Load ML Model & Vectorizer ----------------
-import streamlit as st
-import pickle
+
 
 try:
     with open("career_model.pkl", "rb") as f:
@@ -69,7 +67,7 @@ except Exception as e:
 
 embedding_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
-# ---------------- Top-3 Career Prediction ----------------
+# ---------------- Top-3 Career Prediction -----------------
 def predict_top3(user_input, top_n=3, use_embeddings=False):
     cleaned_input = preprocess_text(user_input)
     cleaned_input = correct_typo(cleaned_input)
@@ -81,19 +79,20 @@ def predict_top3(user_input, top_n=3, use_embeddings=False):
     top_indices = np.argsort(probs)[::-1][:top_n]
     return [(model.classes_[i], round(probs[i]*100, 2)) for i in top_indices]
 
-# Career keyword ML prediction
-career_keywords = ["career", "job", "suit me", "suggest", "profession", "best", "future"]
-if any(k in query_norm for k in career_keywords):
-    top3 = predict_top3(query)
-    result = "💼 Top career suggestions based on your input:\n"
-    for career, prob in top3:
-        skills = all_careers_skills.get(career.lower(), [])
-        result += f"- {career} (confidence: {prob:.1f}%)\n"
-        if skills:
-            result += "  **Skills / Next Steps:**\n" + "\n".join(f"    - {s}" for s in skills)
+# ---------------- Career keyword ML prediction -----------------
+def get_career_suggestions(query_norm):
+    career_keywords = ["career", "job", "suit me", "suggest", "profession", "best", "future"]
+    if any(k in query_norm for k in career_keywords):
+        top3 = predict_top3(query_norm)
+        result = "💼 Top career suggestions based on your input:\n"
+        for career, prob in top3:
+            skills = all_careers_skills.get(career.lower(), [])
+            result += f"- {career} (confidence: {prob:.1f}%)\n"
+            if skills:
+                result += "  **Skills / Next Steps:**\n" + "\n".join(f"    - {s}" for s in skills)
         return result
-
-
+    return None
+    
 # ---------------- Career Info & Courses ----------------
 career_info = {
     "Software Engineer": {"description": "Designs, develops, tests and maintains software applications.",
@@ -1803,7 +1802,7 @@ def openai_fallback(query):
 def get_answer(query):
     query_norm = normalize_text(query)
 
-    # Phrase mapping first
+    # 0️⃣ Phrase mapping (hardcoded)
     for phrase, career in phrase_career_map.items():
         if phrase in query_norm:
             skills = all_careers_skills.get(career.lower(), [])
@@ -1812,7 +1811,7 @@ def get_answer(query):
                 result += "**Skills / Next Steps:**\n" + "\n".join(f"- {s}" for s in skills)
             return result
 
-    # Learned phrases
+    # 1️⃣ Learned phrases
     for phrase, career in st.session_state.learned_careers.items():
         if phrase in query_norm:
             skills = all_careers_skills.get(career.lower(), [])
@@ -1821,47 +1820,34 @@ def get_answer(query):
                 result += "**Skills / Next Steps:**\n" + "\n".join(f"- {s}" for s in skills)
             return result
 
-# Career keyword ML prediction
-career_keywords = ["career", "job", "suit me", "suggest", "profession", "best", "future"]
-if any(k in query_norm for k in career_keywords):
-    if model is not None and vectorizer is not None:
-        try:
-            # Use your trained model to get predictions
-            top3 = predict_top3(query)  # This uses the real predict_top3 function
-            result = "💼 Top career suggestions based on your input:\n"
-            for career, prob in top3:
-                skills = all_careers_skills.get(career.lower(), [])
-                result += f"- {career} (confidence: {prob:.1f}%)\n"
-                if skills:
-                    result += "  **Skills / Next Steps:**\n" + "\n".join(f"    - {s}" for s in skills)
-        except Exception as e:
-            result = f"❌ Unable to get predictions: {e}"
-    else:
-        result = "⚠️ Career prediction model is not loaded. Please ensure `career_model.pkl` and `vectorizer.pkl` are available."
-    return result
+    # 2️⃣ Career keyword ML prediction
+    career_suggestion = get_career_suggestions(query_norm)
+    if career_suggestion:
+        return career_suggestion
 
-    # Fuzzy match
+    # 3️⃣ Fuzzy skill match
     match, skills = fuzzy_match_skill(query)
     if match:
         return f"💡 Key skills / next steps for {match.title()}:\n- " + "\n- ".join(skills)
 
-    # Wikipedia fallback
+    # 4️⃣ Wikipedia fallback
     wiki = get_wiki_summary(query)
     if wiki:
         return wiki
 
-    # DuckDuckGo fallback
+    # 5️⃣ DuckDuckGo fallback
     duck = fetch_from_duckduckgo(query)
     if duck:
         return duck
 
-    # OpenAI fallback
+    # 6️⃣ OpenAI GPT fallback
     gpt_ans = openai_fallback(query)
     if gpt_ans:
         return gpt_ans
 
+    # 7️⃣ Default
     return "❌ I couldn't find a detailed answer. Try rephrasing or adding more context."
-
+    
 # ---------------- Streamlit UI -----------------
 st.title("🤖 Chatbot Assistant")
 st.write("Ask me about careers, skills, trending jobs, or any topic:")

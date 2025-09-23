@@ -913,7 +913,7 @@ if uploaded_file:
 
             def predict_rf(text):
                 # Replace with your RF model if available
-                return predict_logreg(text)  # fallback
+                return predict_logreg(text)  # fallback to logreg
 
             def top_tfidf_careers_with_skills(text, top_n=3):
                 text_vec = tfidf.transform([text])
@@ -932,7 +932,7 @@ if uploaded_file:
             df_csv['LogReg_Predicted'] = df_csv['description'].apply(predict_logreg)
             df_csv['RF_Predicted'] = df_csv['description'].apply(predict_rf)
 
-            # ---------------- TF-IDF top careers (optimized) ----------------
+            # ---------------- TF-IDF Top Careers ----------------
             top_n = 3
 
             def compute_top_careers(row):
@@ -950,7 +950,7 @@ if uploaded_file:
 
             df_csv = df_csv.apply(compute_top_careers, axis=1)
 
-            # ---------------- Map predicted careers ----------------
+            # ---------------- Map Predicted Careers ----------------
             career_map = {
                 "Teacher / Educator": "Teacher",
                 "Software Engineer / Developer": "Software Engineer",
@@ -960,7 +960,7 @@ if uploaded_file:
             df_csv['Mapped_LogReg'] = df_csv['LogReg_Predicted'].apply(lambda x: career_map.get(x, x))
             df_csv['Mapped_RF'] = df_csv['RF_Predicted'].apply(lambda x: career_map.get(x, x))
 
-            # ---------------- Display results ----------------
+            # ---------------- Display Results ----------------
             st.write("### Bulk Predictions with Mapped Careers & TF-IDF Suggestions")
             st.dataframe(df_csv)
 

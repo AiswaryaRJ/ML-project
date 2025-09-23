@@ -79,8 +79,19 @@ def predict_top3(user_input, top_n=3, use_embeddings=False):
         X_input = vectorizer.transform([cleaned_input])
     probs = model.predict_proba(X_input)[0]
     top_indices = np.argsort(probs)[::-1][:top_n]
-    results = [(model.classes_[i], round(probs[i]*100, 2)) for i in top_indices]
-    return results
+    return [(model.classes_[i], round(probs[i]*100, 2)) for i in top_indices]
+
+# Career keyword ML prediction
+career_keywords = ["career", "job", "suit me", "suggest", "profession", "best", "future"]
+if any(k in query_norm for k in career_keywords):
+    top3 = predict_top3(query)
+    result = "💼 Top career suggestions based on your input:\n"
+    for career, prob in top3:
+        skills = all_careers_skills.get(career.lower(), [])
+        result += f"- {career} (confidence: {prob:.1f}%)\n"
+        if skills:
+            result += "  **Skills / Next Steps:**\n" + "\n".join(f"    - {s}" for s in skills)
+    return result
 
 
 # ---------------- Career Info & Courses ----------------
@@ -1720,9 +1731,6 @@ def fuzzy_match_skill(query, threshold=70):
     return None, None
 
 # ---------------- ML Prediction Placeholder -----------------
-def predict_top3_careers(query):
-    # Replace this with actual ML model prediction
-    return [("Doctor", 0.9), ("Nurse", 0.6), ("Software Engineer", 0.3)]
 
 # ---------------- OpenAI GPT Fallback -----------------
 openai.api_key = st.secrets["OPENAI_API_KEY"]

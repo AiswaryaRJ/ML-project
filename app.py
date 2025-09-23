@@ -883,9 +883,13 @@ if uploaded_file:
             st.error("CSV must contain 'description' column.")
         else:
             # Apply cached_predict to get predictions
-            df_csv['LogReg_Predicted'] = df_csv['description'].apply(lambda x: cached_predict(x)['LogisticRegression']['career'])
-            df_csv['RF_Predicted'] = df_csv['description'].apply(lambda x: cached_predict(x)['RandomForest']['career'])
-            
+            def simple_predict(text):
+                 X = vectorizer.transform([preprocess_text(text)])
+                 probs = model.predict_proba(X)[0]
+                 best_idx = np.argmax(probs)
+                 return model.classes_[best_idx]
+
+           df_csv['Predicted_Career'] = df_csv['description'].apply(simple_predict)
             # Map predicted careers to correct keys in career_courses
             career_map = {
                 "Teacher / Educator": "Teacher",

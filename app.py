@@ -1763,17 +1763,24 @@ def get_answer(query):
                 result += "**Skills / Next Steps:**\n" + "\n".join(f"- {s}" for s in skills)
             return result
 
-    # Career keyword ML prediction
-    career_keywords = ["career","job","suit me","suggest","profession","best","future"]
-    if any(k in query_norm for k in career_keywords):
-        top3 = predict_top3_careers(query)
-        result = "💼 Top career suggestions based on your input:\n"
-        for career, prob in top3:
-            skills = all_careers_skills.get(career.lower(), [])
-            result += f"- {career} (confidence: {prob*100:.1f}%)\n"
-            if skills:
-                result += "  **Skills / Next Steps:**\n" + "\n".join(f"    - {s}" for s in skills)
-        return result
+# Career keyword ML prediction
+career_keywords = ["career", "job", "suit me", "suggest", "profession", "best", "future"]
+if any(k in query_norm for k in career_keywords):
+    if model is not None and vectorizer is not None:
+        try:
+            # Use your trained model to get predictions
+            top3 = predict_top3(query)  # This uses the real predict_top3 function
+            result = "💼 Top career suggestions based on your input:\n"
+            for career, prob in top3:
+                skills = all_careers_skills.get(career.lower(), [])
+                result += f"- {career} (confidence: {prob:.1f}%)\n"
+                if skills:
+                    result += "  **Skills / Next Steps:**\n" + "\n".join(f"    - {s}" for s in skills)
+        except Exception as e:
+            result = f"❌ Unable to get predictions: {e}"
+    else:
+        result = "⚠️ Career prediction model is not loaded. Please ensure `career_model.pkl` and `vectorizer.pkl` are available."
+    return result
 
     # Fuzzy match
     match, skills = fuzzy_match_skill(query)

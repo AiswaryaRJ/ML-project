@@ -54,10 +54,18 @@ def correct_typo(text, choices=career_names, threshold=80):
     return match if score >= threshold else text
 
 # ---------------- Load ML Model & Embeddings ----------------
-with open("career_model.pkl", "rb") as f:
-    model = pickle.load(f)
-with open("vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f)
+# ---------------- Load ML Model & Vectorizer ----------------
+import streamlit as st
+import pickle
+
+try:
+    with open("career_model.pkl", "rb") as f:
+        model = pickle.load(f)
+    with open("vectorizer.pkl", "rb") as f:
+        vectorizer = pickle.load(f)
+except Exception as e:
+    model, vectorizer = None, None
+    st.warning(f"⚠️ ML model or vectorizer could not be loaded: {e}")
 
 embedding_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 

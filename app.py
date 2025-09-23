@@ -91,7 +91,7 @@ if any(k in query_norm for k in career_keywords):
         result += f"- {career} (confidence: {prob:.1f}%)\n"
         if skills:
             result += "  **Skills / Next Steps:**\n" + "\n".join(f"    - {s}" for s in skills)
-    return result
+        return result
 
 
 # ---------------- Career Info & Courses ----------------
